@@ -1,0 +1,516 @@
+# Northstar — Architecture Specification
+
+## Version
+
+v0.1 — Foundation Architecture
+
+---
+
+# 1. Purpose
+
+This document defines the technical foundation of Northstar.
+
+Northstar is designed as a personal command center that connects:
+
+- Projects
+- Knowledge
+- Goals
+- Assets
+- Future AI assistance
+
+The initial objective is to build a simple, professional web application with a clean architecture that can grow over time without requiring major redesigns.
+
+The architecture should prioritize maintainability, modularity, and long-term scalability over short-term convenience.
+
+---
+
+# 2. Guiding Principles
+
+## Local First
+
+Northstar begins as a local-first application.
+
+Benefits:
+
+- Free to use
+- Offline capable
+- Private by default
+- No external dependencies
+- Simpler development
+
+Future versions should support cloud synchronization without changing the underlying data model.
+
+---
+
+## Modular Design
+
+Every major feature should exist as an independent module.
+
+Examples include:
+
+- Dashboard
+- Missions
+- Projects
+- Knowledge
+- Assets
+- AI
+- Weather
+- Astronomy
+- Settings
+
+Adding or removing one module should not require rewriting others.
+
+---
+
+## Separation of Concerns
+
+Northstar should clearly separate:
+
+- User Interface
+- Business Logic
+- Data Management
+- External Services
+- AI Systems
+
+Each layer should have a well-defined responsibility.
+
+---
+
+## Data Before Intelligence
+
+Northstar's intelligence depends on the quality of its information.
+
+Development order:
+
+1. Store information
+2. Organize information
+3. Connect information
+4. Retrieve information
+5. Analyze information
+6. Assist the user
+
+AI should consume structured information—not replace it.
+
+---
+
+# 3. High-Level Architecture
+
+```
+                     Northstar
+
+                  User Interface
+                         │
+                         ▼
+               Application Logic
+                         │
+                         ▼
+              Data Management Layer
+                         │
+                         ▼
+                Local Data Storage
+                         │
+                         ▼
+              External Services (Future)
+                         │
+                         ▼
+                  AI Context Layer
+                         │
+                         ▼
+                   AI Integrations
+```
+
+---
+
+# 4. Technology Stack
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+
+Purpose:
+
+- Fast development
+- Responsive design
+- Component-based architecture
+- Maintainable codebase
+
+---
+
+## Version Control
+
+Git
+
+Hosted on GitHub.
+
+Purpose:
+
+- History
+- Collaboration
+- Backup
+- Documentation
+- Portfolio
+
+---
+
+## Initial Storage
+
+Browser Local Storage
+
+Future migration path:
+
+Browser Storage → Local Database → Cloud Database
+
+---
+
+# 5. Project Structure
+
+```
+northstar/
+
+├── docs/
+│
+├── public/
+│
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── common/
+│   │   ├── layout/
+│   │   ├── navigation/
+│   │   └── widgets/
+│   │
+│   ├── pages/
+│   │   ├── Dashboard/
+│   │   ├── Missions/
+│   │   ├── Projects/
+│   │   ├── Knowledge/
+│   │   └── Settings/
+│   │
+│   ├── models/
+│   ├── services/
+│   ├── themes/
+│   ├── utils/
+│   └── data/
+│
+├── package.json
+└── README.md
+```
+
+---
+
+# 6. Core Data Model
+
+Northstar revolves around connected information.
+
+## User
+
+Represents the owner of the system.
+
+Future versions may support multiple users.
+
+---
+
+## Mission
+
+Represents a meaningful long-term objective.
+
+Contains:
+
+- Title
+- Description
+- Status
+- Progress
+- Priority
+- Next Action
+- Related Projects
+
+Examples:
+
+- Build Northstar
+- Build a Staff Collection
+- Learn AI Development
+
+---
+
+## Project
+
+Represents a concrete effort.
+
+Contains:
+
+- Title
+- Description
+- Tasks
+- Progress
+- Status
+- Notes
+- Related Assets
+
+Examples:
+
+- Northstar Development
+- Maple Staff Batch
+- Website Redesign
+
+---
+
+## Note
+
+Represents preserved knowledge.
+
+Examples:
+
+- Ideas
+- Research
+- Tutorials
+- Lessons Learned
+- Meeting Notes
+- AI Conversations
+
+---
+
+## Asset (Future)
+
+Represents a physical or digital object.
+
+Examples:
+
+- Staffs
+- Wood Samples
+- Photos
+- Documents
+- Tools
+- Images
+
+---
+
+# 7. Knowledge Graph Direction
+
+Long-term, Northstar should become a connected information system.
+
+```
+                    User
+                      │
+     ┌────────────────┼────────────────┐
+     │                │                │
+  Missions        Projects       Knowledge
+     │                │                │
+     │                │                │
+  Progress         Assets           Notes
+     │                │                │
+     └────────────────┼────────────────┘
+                      │
+               AI Context Layer
+```
+
+Rather than isolated lists, information should become connected over time.
+
+---
+
+# 8. AI Architecture
+
+AI should interact with Northstar through structured context.
+
+Instead of:
+
+```
+User
+ │
+ ▼
+ AI
+ │
+ ▼
+ Answer
+```
+
+Northstar should become:
+
+```
+Northstar Data
+        │
+        ▼
+ Context Builder
+        │
+        ▼
+ AI Model
+        │
+        ▼
+ Recommendations
+```
+
+This allows AI to understand:
+
+- Current projects
+- Personal goals
+- Related notes
+- Physical assets
+- Historical decisions
+
+---
+
+# 9. Planned AI Progression
+
+## Phase 1 — Librarian
+
+Retrieve information.
+
+Examples:
+
+- Find notes
+- Search projects
+- Locate documents
+
+---
+
+## Phase 2 — Consultant
+
+Use context to recommend actions.
+
+Examples:
+
+- Prioritize projects
+- Suggest next steps
+- Compare options
+
+---
+
+## Phase 3 — Collaborator
+
+Create alongside the user.
+
+Examples:
+
+- Brainstorm ideas
+- Design concepts
+- Solve problems
+- Draft plans
+
+---
+
+## Phase 4 — Assistant
+
+Provide proactive support.
+
+Examples:
+
+- Daily planning
+- Reminders
+- Weather-aware suggestions
+- Project health monitoring
+
+---
+
+# 10. Theme Architecture
+
+Themes should be driven by data rather than hard-coded styles.
+
+Each theme should define:
+
+- Background
+- Surface Colors
+- Text Colors
+- Accent Colors
+- Warning Colors
+- Success Colors
+- Typography
+- Border Radius
+- Shadows
+
+Initial theme:
+
+Operator Observatory
+
+Future themes:
+
+- Solo Leveling
+- Workshop
+- Forest
+- Sci-Fi
+- Custom User Themes
+
+---
+
+# 11. Data Migration Strategy
+
+Northstar should evolve without requiring users to recreate data.
+
+Migration path:
+
+```
+Browser Storage
+        │
+        ▼
+Local Database
+        │
+        ▼
+Cloud Database
+```
+
+The application's data model should remain stable regardless of storage location.
+
+---
+
+# 12. Development Workflow
+
+Each feature follows this process:
+
+1. Define
+2. Design
+3. Build
+4. Test
+5. Refine
+6. Document
+
+Every significant milestone should be committed to Git with meaningful commit messages.
+
+Documentation should evolve alongside the code.
+
+---
+
+# 13. v0.1 Architecture Goals
+
+Northstar v0.1 establishes:
+
+- Responsive web application
+- Clean project structure
+- Modular components
+- Reusable UI
+- Local data storage
+- Theme framework
+- Mission tracking
+- Project tracking
+- Notes
+- Professional development workflow
+
+It intentionally excludes:
+
+- Cloud synchronization
+- AI integrations
+- Advanced analytics
+- Image recognition
+- Automation
+
+These systems should be enabled by the architecture, not implemented prematurely.
+
+---
+
+# 14. Long-Term Vision
+
+Northstar is intended to become a personal operating system.
+
+A place where:
+
+- Goals become missions
+- Projects become organized workflows
+- Knowledge becomes connected context
+- Physical assets become searchable
+- AI becomes an intelligent collaborator
+
+The long-term value of Northstar comes from the relationships between information—not from any individual feature.
+
+The architecture should always prioritize clarity, extensibility, and maintainability.
+
+Every new capability should strengthen the foundation rather than complicate it.
