@@ -1,48 +1,75 @@
-# Northstar
+# React + TypeScript + Vite
 
-A personal command center for projects, knowledge, goals, and AI-assisted productivity.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Vision
+Currently, two official plugins are available:
 
-Northstar is designed to help organize the information, projects, and goals that matter most.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-The goal is to create a personalized operating system that answers:
+## React Compiler
 
-- What am I working toward?
-- What matters today?
-- What needs attention?
-- What information do I need to make better decisions?
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Current Status
+## Expanding the ESLint configuration
 
-🚧 Early Development — v0.1 Foundation
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Core Features (Planned)
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-- Personal dashboard
-- Mission tracking
-- Project management
-- Knowledge organization
-- Custom themes
-- Local-first data storage
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-## Long-Term Goals
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
-Future versions may include:
+```
 
-- AI-assisted planning and decision support
-- Personal knowledge retrieval
-- Image and document understanding
-- Cloud synchronization
-- Mobile applications
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## Philosophy
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-Northstar prioritizes:
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
-- Useful over flashy
-- Clear over complicated
-- Modular over restrictive
-- Personal over generic
-
-Built by Z. Wolfe Studio
+```
