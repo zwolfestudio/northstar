@@ -211,3 +211,61 @@ body {
   font-size: 0.85rem;
   opacity: 0.8;
 }
+
+.mission-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.mission-actions button,
+.add-mission button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e8e8;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.mission-actions button:hover,
+.add-mission button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mission-input {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8e8e8;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mission-card-editing {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-mission {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.add-mission .mission-input {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.hint {
+  color: #9aa6b2;
+  font-size: 0.85rem;
+  margin-top: -8px;
+  margin-bottom: 12px;
+}
