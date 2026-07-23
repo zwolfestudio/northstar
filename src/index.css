@@ -304,3 +304,46 @@ body {
 .page-list {
   max-width: 640px;
 }
+
+.tracked-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 209, 102, 0.15);
+  color: #ffd166;
+  font-size: 0.7rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* Dashboard is a single-glance summary: kept compact so it fits a
+   1920x1080 window without scrolling now that it shows one tracked
+   Mission and one tracked Project instead of a full list. */
+.dashboard-page h1 {
+  font-size: 2.1rem;
+  margin: 0 0 4px;
+}
+
+.dashboard-page > p {
+  margin: 0 0 20px;
+  color: #9aa6b2;
+}
+
+.dashboard-page .card {
+  padding: 18px;
+}
+
+.dashboard-page .mission-card,
+.dashboard-page .objective-card {
+  padding: 14px;
+  margin-top: 0;
+}
+
+.dashboard-page .progress-section {
+  margin-top: 12px;
+}
+
+.dashboard-page .progress-bar {
+  margin: 8px 0;
+}

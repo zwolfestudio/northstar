@@ -3,58 +3,58 @@ import MissionCard from "../components/cards/MissionCard";
 import ProjectCard from "../components/cards/ProjectCard";
 import useMissions from "../hooks/useMissions";
 import useProjects from "../hooks/useProjects";
-
-const SUMMARY_COUNT = 3;
+import useTrackedItems from "../hooks/useTrackedItems";
 
 function Dashboard() {
   const { items: missions } = useMissions();
   const { items: projects } = useProjects();
+  const { tracked } = useTrackedItems();
 
-  const activeMissions = missions
-    .filter((mission) => mission.status !== "Completed")
-    .slice(0, SUMMARY_COUNT);
+  const activeMissions = missions.filter((mission) => mission.status !== "Completed");
+  const activeProjects = projects.filter((project) => project.status !== "Completed");
 
-  const activeProjects = projects
-    .filter((project) => project.status !== "Completed")
-    .slice(0, SUMMARY_COUNT);
+  const trackedMission =
+    activeMissions.find((mission) => mission.id === tracked.missionId) ?? activeMissions[0];
+
+  const trackedProject =
+    activeProjects.find((project) => project.id === tracked.projectId) ?? activeProjects[0];
 
   const missionTitleById = (id?: string) =>
     id ? missions.find((mission) => mission.id === id)?.title : undefined;
 
   return (
-    <div>
+    <div className="dashboard-page">
       <h1>Good afternoon.</h1>
       <p>Your mission briefing awaits.</p>
 
       <div className="dashboard-grid">
         <section className="card">
           <div className="section-header">
-            <h2>🎯 Active Missions</h2>
+            <h2>🎯 Tracked Mission</h2>
             <Link to="/missions">View all →</Link>
           </div>
 
-          {activeMissions.map((mission) => (
-            <MissionCard key={mission.id} mission={mission} readOnly />
-          ))}
-
-          {activeMissions.length === 0 && <p className="hint">No active missions.</p>}
+          {trackedMission ? (
+            <MissionCard mission={trackedMission} readOnly />
+          ) : (
+            <p className="hint">No active missions.</p>
+          )}
         </section>
 
         <section className="card">
           <div className="section-header">
-            <h2>⚡ Current Projects</h2>
+            <h2>⚡ Tracked Project</h2>
             <Link to="/projects">View all →</Link>
           </div>
 
-          {activeProjects.map((project) => (
+          {trackedProject ? (
             <ProjectCard
-              key={project.id}
-              project={project}
-              missionTitle={missionTitleById(project.missionId)}
+              project={trackedProject}
+              missionTitle={missionTitleById(trackedProject.missionId)}
             />
-          ))}
-
-          {activeProjects.length === 0 && <p className="hint">No active projects.</p>}
+          ) : (
+            <p className="hint">No active projects.</p>
+          )}
         </section>
 
         <section className="card">

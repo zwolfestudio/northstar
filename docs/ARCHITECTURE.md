@@ -602,11 +602,45 @@ introduced — each page independently loads from the storage service on
 mount, which stays correct because `localStorage` is the single source
 of truth, not in-memory state carried across routes.
 
-## Known Gaps Going Into Phase 3
+## Phase 3 (part 1) — Dashboard Tracking & Layout
+
+The Dashboard now shows exactly one Mission and one Project instead of
+a top-3 summary. Which one is "tracked" is a manual, interchangeable
+choice — a "Track on Dashboard" button on `MissionCard`/`ProjectCard`
+(rendered only when an `onTrack` prop is passed, i.e. on `/missions`
+and `/projects`) sets it, one at a time per collection. Until
+something is manually tracked, the Dashboard falls back to the first
+active item.
+
+Tracked state is a single small value, not a collection of records, so
+it doesn't fit `loadCollection`/`saveCollection`. `storage.ts` gained a
+parallel `loadValue`/`saveValue` pair using the same `{ version, data }`
+envelope. `src/hooks/useTrackedItems.ts` wraps that for the
+`{ missionId, projectId }` shape under the `northstar-dashboard-tracked`
+key.
+
+**Bug found and fixed while building this:** `src/data/missions.ts` and
+`src/data/projects.ts` call `createId()` at module load, generating new
+random ids every time the module re-evaluates — i.e. every page
+reload. `loadCollection` only persisted a collection after its first
+write (`if (!raw) return fallback` — never saved), so a collection
+nobody had edited yet kept regenerating fresh ids on every reload.
+Harmless as long as nothing outside the collection referenced one of
+its ids — which stayed true through Phase 2, until tracking gave the
+Dashboard a reason to store a mission/project id independently. Fixed
+by having `loadCollection` persist the seed on first *read*, not first
+write, so ids are stable from the moment a collection is first loaded.
+
+Dashboard-specific CSS (`.dashboard-page` scope in `index.css`) tightens
+card padding and heading sizes so the page fits a 1920×1080 window
+without scrolling, now that it only renders two cards' worth of live
+data instead of six.
+
+## Known Gaps Going Into Phase 3 (part 2)
 
 - `Project.tasks` exists in the data model with no editing UI yet
   (Phase 4).
 - Styling is unchanged hand-written CSS; no theme tokens yet — this is
-  Phase 3's job.
+  the remaining Phase 3 work.
 - Knowledge and Settings are placeholders with no real data model or
   functionality.

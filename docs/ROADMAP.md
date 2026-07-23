@@ -11,7 +11,8 @@ how it's actually built, see [ARCHITECTURE.md](ARCHITECTURE.md).
 **v0.1** — Shipped (foundation: dashboard, mission tracking, local
 storage, professional dark UI).
 
-**v0.2** — In progress. Phase 1 and Phase 2 complete, Phase 3 next.
+**v0.2** — In progress. Phase 1 and Phase 2 complete. Phase 3 in
+progress — Dashboard tracking/layout shipped, theme tokens pending.
 
 ---
 
@@ -63,7 +64,31 @@ storage, professional dark UI).
   links, even though there's no feature behind them yet
 - Finished page covers both completed Missions and completed Projects
 
-### Phase 3 — Theme System
+### Phase 3 — Theme System — In Progress
+
+**Dashboard tracking & layout — ✅ Complete (2026-07-23)**
+
+- Dashboard now shows exactly one Mission and one Project — whichever
+  is manually "tracked" — instead of a top-3 summary
+- "Track on Dashboard" button added to Mission and Project cards on
+  their full list pages (`/missions`, `/projects`); tracking is
+  interchangeable — tracking a different item swaps the Dashboard's
+  spotlight, one at a time per collection
+- Until something is manually tracked, the Dashboard defaults to the
+  first active Mission/Project
+- Tracked selection persists via a new small single-value slot in the
+  storage service (`loadValue`/`saveValue`, `src/hooks/useTrackedItems.ts`)
+- Dashboard cards/headings tightened so the page fits a 1920×1080
+  window without scrolling
+- **Bug fix**: seed data (`src/data/missions.ts`, `src/data/projects.ts`)
+  generates fresh random ids on every module load. `loadCollection`
+  previously only persisted a collection after its first write, so an
+  untouched collection's ids silently changed on every page reload —
+  breaking anything that stored a reference to one (like a tracked
+  mission). Fixed by persisting the seed on first read, not first
+  write, in `src/services/storage.ts`.
+
+**Still to do:**
 
 - Extract hardcoded colors/spacing from `index.css` into theme
   tokens / CSS variables

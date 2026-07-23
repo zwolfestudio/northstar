@@ -5,12 +5,14 @@ type Props = {
   mission: Mission;
   onUpdate?: (id: string, updates: Partial<Mission>) => void;
   readOnly?: boolean;
+  onTrack?: () => void;
+  isTracked?: boolean;
 };
 
 const STATUS_OPTIONS: MissionStatus[] = ["Planning", "Active", "On Hold", "Completed"];
 const PRIORITY_OPTIONS: Priority[] = ["Low", "Medium", "High", "Critical"];
 
-function MissionCard({ mission, onUpdate, readOnly = false }: Props) {
+function MissionCard({ mission, onUpdate, readOnly = false, onTrack, isTracked = false }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(mission);
 
@@ -88,7 +90,10 @@ function MissionCard({ mission, onUpdate, readOnly = false }: Props) {
     <div className="mission-card">
       <div className="mission-header">
         <div>
-          <h3>{mission.title}</h3>
+          <h3>
+            {mission.title}
+            {isTracked && <span className="tracked-badge">★ Tracked</span>}
+          </h3>
           <p className="category">{mission.category}</p>
         </div>
 
@@ -127,6 +132,12 @@ function MissionCard({ mission, onUpdate, readOnly = false }: Props) {
 
           {mission.status !== "Completed" && (
             <button onClick={completeMission}>Mark Complete</button>
+          )}
+
+          {onTrack && (
+            <button onClick={onTrack} disabled={isTracked}>
+              {isTracked ? "★ Tracked" : "Track on Dashboard"}
+            </button>
           )}
         </div>
       )}

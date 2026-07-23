@@ -1,10 +1,12 @@
 import ProjectCard from "../components/cards/ProjectCard";
 import useMissions from "../hooks/useMissions";
 import useProjects from "../hooks/useProjects";
+import useTrackedItems from "../hooks/useTrackedItems";
 
 function Projects() {
   const { items: missions } = useMissions();
   const { items: projects } = useProjects();
+  const { tracked, trackProject } = useTrackedItems();
 
   const missionTitleById = (id?: string) =>
     id ? missions.find((mission) => mission.id === id)?.title : undefined;
@@ -20,6 +22,8 @@ function Projects() {
             key={project.id}
             project={project}
             missionTitle={missionTitleById(project.missionId)}
+            onTrack={() => trackProject(project.id)}
+            isTracked={tracked.projectId === project.id}
           />
         ))}
       </div>

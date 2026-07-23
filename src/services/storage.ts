@@ -27,7 +27,13 @@ export function loadCollection<T>(
   normalize?: (raw: unknown[]) => T[]
 ): T[] {
   const raw = localStorage.getItem(key);
-  if (!raw) return fallback;
+  if (!raw) {
+    // First-ever load: persist the seed immediately so its generated
+    // ids are stable from here on, instead of regenerating (and
+    // orphaning any stored reference to them) on every future load.
+    saveCollection(key, fallback);
+    return fallback;
+  }
 
   let parsed: unknown;
   try {
@@ -52,5 +58,38 @@ export function loadCollection<T>(
 
 export function saveCollection<T>(key: string, data: T[]): void {
   const payload: StoredCollection<T> = { version: STORAGE_VERSION, data };
+  localStorage.setItem(key, JSON.stringify(payload));
+}
+
+type StoredValue<T> = {
+  version: number;
+  data: T;
+};
+
+function isStoredValue<T>(value: unknown): value is StoredValue<T> {
+  return typeof value === "object" && value !== null && "version" in value && "data" in value;
+}
+
+/**
+ * Same versioned envelope as loadCollection/saveCollection, but for a
+ * single value (e.g. dashboard preferences) rather than an array of
+ * records with ids.
+ */
+export function loadValue<T>(key: string, fallback: T): T {
+  const raw = localStorage.getItem(key);
+  if (!raw) return fallback;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+
+  return isStoredValue<T>(parsed) ? parsed.data : fallback;
+}
+
+export function saveValue<T>(key: string, value: T): void {
+  const payload: StoredValue<T> = { version: STORAGE_VERSION, data: value };
   localStorage.setItem(key, JSON.stringify(payload));
 }

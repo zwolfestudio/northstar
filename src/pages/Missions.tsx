@@ -1,10 +1,12 @@
 import { useState } from "react";
 import MissionCard from "../components/cards/MissionCard";
 import useMissions from "../hooks/useMissions";
+import useTrackedItems from "../hooks/useTrackedItems";
 import { createId } from "../utils/id";
 
 function Missions() {
   const { items: missions, addItem: addMission, updateItem: updateMission } = useMissions();
+  const { tracked, trackMission } = useTrackedItems();
   const [newTitle, setNewTitle] = useState("");
 
   const activeMissions = missions.filter((mission) => mission.status !== "Completed");
@@ -45,7 +47,13 @@ function Missions() {
 
       <div className="page-list">
         {activeMissions.map((mission) => (
-          <MissionCard key={mission.id} mission={mission} onUpdate={updateMission} />
+          <MissionCard
+            key={mission.id}
+            mission={mission}
+            onUpdate={updateMission}
+            onTrack={() => trackMission(mission.id)}
+            isTracked={tracked.missionId === mission.id}
+          />
         ))}
       </div>
 
