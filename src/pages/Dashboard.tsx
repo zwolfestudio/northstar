@@ -51,6 +51,7 @@ function Dashboard() {
             <ProjectCard
               project={trackedProject}
               missionTitle={missionTitleById(trackedProject.missionId)}
+              readOnly
             />
           ) : (
             <p className="hint">No active projects.</p>

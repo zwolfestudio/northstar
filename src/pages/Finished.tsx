@@ -5,7 +5,7 @@ import useProjects from "../hooks/useProjects";
 
 function Finished() {
   const { items: missions, updateItem: updateMission } = useMissions();
-  const { items: projects } = useProjects();
+  const { items: projects, updateItem: updateProject } = useProjects();
 
   const completedMissions = missions.filter((mission) => mission.status === "Completed");
   const completedProjects = projects.filter((project) => project.status === "Completed");
@@ -38,6 +38,8 @@ function Finished() {
             key={project.id}
             project={project}
             missionTitle={missionTitleById(project.missionId)}
+            missions={missions}
+            onUpdate={updateProject}
           />
         ))}
       </div>

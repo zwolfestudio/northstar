@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (updated through v0.2 Phase 3 — see Section 15)
+v0.1 — Foundation Architecture (updated through v0.2 Phase 4 — see Section 15)
 
 ## Status
 
@@ -180,7 +180,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (as of v0.2 Phase 3)
+## Current (as of v0.2 Phase 4)
 
 ```
 northstar/
@@ -192,20 +192,20 @@ northstar/
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │   ├── cards/      (MissionCard, ProjectCard)
+│   │   ├── cards/      (MissionCard, ProjectCard, NoteCard)
 │   │   └── layout/      (Sidebar)
 │   │
 │   ├── pages/
 │   │   ├── Dashboard.tsx    (summary view)
 │   │   ├── Missions.tsx     (full Mission add/edit/complete)
-│   │   ├── Projects.tsx
+│   │   ├── Projects.tsx     (full Project add/edit/complete + tasks)
 │   │   ├── Finished.tsx     (completed Missions + Projects)
-│   │   ├── Knowledge.tsx    (placeholder)
+│   │   ├── Knowledge.tsx    (full Note add/edit/delete)
 │   │   └── Settings.tsx     (placeholder)
 │   │
-│   ├── models/      (Mission, Project — typed data shapes)
+│   ├── models/      (Mission, Project, Note — typed data shapes)
 │   ├── services/    (storage.ts — versioned localStorage layer)
-│   ├── hooks/        (useCollection, useMissions, useProjects, useTrackedItems)
+│   ├── hooks/        (useCollection, useMissions, useProjects, useNotes, useTrackedItems)
 │   ├── themes/        (operator-observatory.css — CSS custom properties)
 │   ├── utils/         (id.ts)
 │   └── data/           (seed data used on first run)
@@ -295,6 +295,19 @@ Examples:
 ## Note
 
 Represents preserved knowledge.
+
+Implemented in `src/models/note.ts`. Fields:
+
+- `id`
+- `title`
+- `body` — plain text; no markdown/rich-text yet
+- `missionId` (optional) — links to a Mission's `id`
+- `projectId` (optional) — links to a Project's `id`
+- `createdAt` / `updatedAt`
+
+Unlike Mission and Project, Note has no `status`/`progress` — it's
+information, not an objective. Seeded empty (`src/data/notes.ts`);
+no placeholder notes were invented for v0.2 Phase 4.
 
 Examples:
 
@@ -674,10 +687,39 @@ template boilerplate) was never imported anywhere and was deleted.
 The token system meets the actual goal — swappable theme identity —
 without adding a build-time dependency for a solo-maintained project.
 
-## Known Gaps Going Into Phase 4
+## Phase 4 — Projects & Knowledge Modules
 
-- `Project.tasks` exists in the data model with no editing UI yet.
-- Knowledge and Settings are placeholders with no real data model or
-  functionality.
+Projects reached the same CRUD depth Missions have had since Phase 1:
+`ProjectCard` gained an edit mode (title, linked Mission via a
+`<select>` of all Missions, status, notes textarea), an "Increase
+Progress" button, and "Mark Complete" — mirroring `MissionCard`
+exactly rather than inventing a different pattern. `Projects.tsx`
+gained an add-project form the same way `Missions.tsx` already had
+one.
+
+Tasks are edited inline on the card itself: a checklist of
+`project.tasks` plus an "Add a task" input. Toggling/adding/removing a
+task is just `onUpdate(project.id, { tasks: newArray })` — there's no
+separate task collection or storage key, since tasks are embedded in
+the Project record (as designed back in Phase 1).
+
+`ProjectCard` gained a `readOnly` prop, same shape as `MissionCard`'s:
+the Dashboard's tracked-project spotlight passes it to suppress the
+task list and action buttons, keeping the Phase 3 no-scroll layout
+intact now that a Project card can render a lot more content.
+
+The Knowledge module is new from scratch: `Note` model, `useNotes`
+hook (same `useCollection` pattern as Missions/Projects), `NoteCard`
+with its own edit mode, and a real `Knowledge.tsx` replacing the
+placeholder. Notes can optionally link to a Mission and/or Project via
+the same `<select>` pattern used for Project→Mission linking.
+
+## Known Gaps Going Into Phase 5
+
+- Knowledge has no search/filter — fine for a handful of notes, worth
+  revisiting once there are many.
+- Settings is still a placeholder with no real functionality.
 - Warning/Success colors and Shadows are documented theme categories
   with no values yet — add them when a feature needs them.
+- No automated tests anywhere yet — Phase 5 explicitly calls out the
+  storage layer as the highest-value place to start.

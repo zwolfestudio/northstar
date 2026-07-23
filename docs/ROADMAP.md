@@ -11,7 +11,8 @@ how it's actually built, see [ARCHITECTURE.md](ARCHITECTURE.md).
 **v0.1** — Shipped (foundation: dashboard, mission tracking, local
 storage, professional dark UI).
 
-**v0.2** — In progress. Phases 1–3 complete. Phase 4 next.
+**v0.2** — In progress. Phases 1–4 complete. Phase 5 next — the last
+phase before v0.2 is done.
 
 ---
 
@@ -114,21 +115,34 @@ storage, professional dark UI).
 - No new themes yet — a second theme is now just a new file in
   `src/themes/` with the same variable names and different values
 
-### Phase 4 — Projects & Knowledge Modules
+### Phase 4 — Projects & Knowledge Modules — ✅ Complete (2026-07-23)
 
-- Task-list UI for Projects (`tasks[]` already exists in the data
-  model, unexposed)
-- Build the Knowledge/Notes module (not yet started)
+- Projects reached full parity with Missions: add, edit (title,
+  linked Mission, status, notes), increase progress, mark complete —
+  none of that existed before this phase
+- Inline task list on each Project card — add a task, check it off,
+  remove it. Tasks live on the Project record itself (`tasks[]`,
+  already in the data model since Phase 1); no separate task
+  collection
+- New `Note` model (`src/models/note.ts`): title, body, optional links
+  to a Mission and/or Project, timestamps. Seeded empty — no
+  placeholder content invented for a feature that didn't exist before
+- Knowledge page is real now: add/edit/delete notes, newest first,
+  optionally tagged to a Mission/Project
+- Dashboard's tracked Project stays read-only (no task list, no
+  actions) — consistent with how the tracked Mission already worked,
+  and keeps the compact/no-scroll layout from Phase 3 intact
 - Reaches full v0.1 product scope: Dashboard + Missions + Projects +
   Notes
+- No search/filter on Knowledge yet — deferred; a handful of notes
+  don't need it, and search is really a "Librarian"-stage AI feature
+  per the product spec's AI roadmap, not a Phase 4 concern
 
 ### Phase 5 — Polish & Hardening
 
 - Decide real scope for the "Today's Focus" and "Observatory"
   placeholder widgets, or explicitly defer to v0.3
 - Add tests around the storage layer, given how much depends on it
-- Resolve the Tailwind question for good; update ARCHITECTURE.md to
-  match reality
 
 ---
 
