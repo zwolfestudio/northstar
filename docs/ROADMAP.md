@@ -11,7 +11,7 @@ how it's actually built, see [ARCHITECTURE.md](ARCHITECTURE.md).
 **v0.1** — Shipped (foundation: dashboard, mission tracking, local
 storage, professional dark UI).
 
-**v0.2** — In progress. Phase 1 complete, Phase 2 next.
+**v0.2** — In progress. Phase 1 and Phase 2 complete, Phase 3 next.
 
 ---
 
@@ -38,14 +38,30 @@ storage, professional dark UI).
   Phase 3
 - Existing v0.1 localStorage data preserved and upgraded, not wiped
 
-### Phase 2 — Navigation & Modules — Next
+### Phase 2 — Navigation & Modules — ✅ Complete (2026-07-23)
 
-- Add client-side routing
-- Build Missions / Projects / Knowledge / Settings as real pages, per
-  the target structure in ARCHITECTURE.md
-- Make the Sidebar's nav links functional, with active-route styling
-- Ship a dedicated "Finished" page for completed missions (currently a
-  temporary section on the Dashboard)
+- Added client-side routing (`react-router-dom`)
+- Dashboard is now a summary view (top 3 active Missions/Projects,
+  read-only, with "View all" links) instead of the full management UI
+- New `/missions` page: the full add/edit/complete flow that used to
+  live on the Dashboard
+- New `/projects` page: full Project list
+- New `/finished` page: completed Missions and completed Projects,
+  reachable from the sidebar
+- New `/knowledge` and `/settings` pages: minimal placeholders (no
+  real functionality yet — Knowledge's real build-out is Phase 4;
+  Settings has no defined scope)
+- Sidebar nav links are functional with active-route highlighting;
+  "Assets" now reads "Future" (disabled, matching the "AI — Coming
+  Soon" treatment) since it has no model or scope yet
+
+**Decisions made:**
+
+- Dashboard is a snapshot, not a duplicate management surface — full
+  CRUD lives on dedicated pages
+- Knowledge/Settings got minimal real pages rather than staying dead
+  links, even though there's no feature behind them yet
+- Finished page covers both completed Missions and completed Projects
 
 ### Phase 3 — Theme System
 

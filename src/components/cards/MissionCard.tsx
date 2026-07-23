@@ -3,13 +3,14 @@ import type { Mission, MissionStatus, Priority } from "../../models/mission";
 
 type Props = {
   mission: Mission;
-  onUpdate: (id: string, updates: Partial<Mission>) => void;
+  onUpdate?: (id: string, updates: Partial<Mission>) => void;
+  readOnly?: boolean;
 };
 
 const STATUS_OPTIONS: MissionStatus[] = ["Planning", "Active", "On Hold", "Completed"];
 const PRIORITY_OPTIONS: Priority[] = ["Low", "Medium", "High", "Critical"];
 
-function MissionCard({ mission, onUpdate }: Props) {
+function MissionCard({ mission, onUpdate, readOnly = false }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(mission);
 
@@ -19,7 +20,7 @@ function MissionCard({ mission, onUpdate }: Props) {
   };
 
   const saveEditing = () => {
-    onUpdate(mission.id, {
+    onUpdate?.(mission.id, {
       title: draft.title,
       category: draft.category,
       priority: draft.priority,
@@ -29,7 +30,7 @@ function MissionCard({ mission, onUpdate }: Props) {
   };
 
   const completeMission = () => {
-    onUpdate(mission.id, {
+    onUpdate?.(mission.id, {
       status: "Completed",
       progress: 100,
       completedAt: new Date().toISOString(),
@@ -110,23 +111,25 @@ function MissionCard({ mission, onUpdate }: Props) {
         </div>
       </div>
 
-      <div className="mission-actions">
-        <button
-          onClick={() =>
-            onUpdate(mission.id, {
-              progress: Math.min(mission.progress + 5, 100),
-            })
-          }
-        >
-          Increase Progress
-        </button>
+      {!readOnly && (
+        <div className="mission-actions">
+          <button
+            onClick={() =>
+              onUpdate?.(mission.id, {
+                progress: Math.min(mission.progress + 5, 100),
+              })
+            }
+          >
+            Increase Progress
+          </button>
 
-        <button onClick={startEditing}>Edit</button>
+          <button onClick={startEditing}>Edit</button>
 
-        {mission.status !== "Completed" && (
-          <button onClick={completeMission}>Mark Complete</button>
-        )}
-      </div>
+          {mission.status !== "Completed" && (
+            <button onClick={completeMission}>Mark Complete</button>
+          )}
+        </div>
+      )}
 
       <span className="priority">{mission.priority} Priority</span>
     </div>

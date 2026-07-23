@@ -1,47 +1,25 @@
-import { useState } from "react";
-import { missions as seedMissions } from "../data/missions";
-import { projects as seedProjects } from "../data/projects";
+import { Link } from "react-router-dom";
 import MissionCard from "../components/cards/MissionCard";
 import ProjectCard from "../components/cards/ProjectCard";
-import useCollection from "../hooks/useCollection";
-import { normalizeMissions, type Mission } from "../models/mission";
-import type { Project } from "../models/project";
-import { createId } from "../utils/id";
+import useMissions from "../hooks/useMissions";
+import useProjects from "../hooks/useProjects";
+
+const SUMMARY_COUNT = 3;
 
 function Dashboard() {
-  const {
-    items: missions,
-    addItem: addMission,
-    updateItem: updateMission,
-  } = useCollection<Mission>("northstar-missions", seedMissions, normalizeMissions);
+  const { items: missions } = useMissions();
+  const { items: projects } = useProjects();
 
-  const { items: projects } = useCollection<Project>("northstar-projects", seedProjects);
+  const activeMissions = missions
+    .filter((mission) => mission.status !== "Completed")
+    .slice(0, SUMMARY_COUNT);
 
-  const [newTitle, setNewTitle] = useState("");
-
-  const activeMissions = missions.filter((mission) => mission.status !== "Completed");
-  const completedMissions = missions.filter((mission) => mission.status === "Completed");
+  const activeProjects = projects
+    .filter((project) => project.status !== "Completed")
+    .slice(0, SUMMARY_COUNT);
 
   const missionTitleById = (id?: string) =>
     id ? missions.find((mission) => mission.id === id)?.title : undefined;
-
-  const handleAddMission = () => {
-    const title = newTitle.trim();
-    if (!title) return;
-
-    const now = new Date().toISOString();
-    addMission({
-      id: createId(),
-      title,
-      category: "General",
-      status: "Planning",
-      progress: 0,
-      priority: "Medium",
-      createdAt: now,
-      updatedAt: now,
-    });
-    setNewTitle("");
-  };
 
   return (
     <div>
@@ -50,34 +28,33 @@ function Dashboard() {
 
       <div className="dashboard-grid">
         <section className="card">
-          <h2>🎯 Active Missions</h2>
-
-          <div className="add-mission">
-            <input
-              className="mission-input"
-              placeholder="New mission title..."
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAddMission()}
-            />
-            <button onClick={handleAddMission}>Add Mission</button>
+          <div className="section-header">
+            <h2>🎯 Active Missions</h2>
+            <Link to="/missions">View all →</Link>
           </div>
 
           {activeMissions.map((mission) => (
-            <MissionCard key={mission.id} mission={mission} onUpdate={updateMission} />
+            <MissionCard key={mission.id} mission={mission} readOnly />
           ))}
+
+          {activeMissions.length === 0 && <p className="hint">No active missions.</p>}
         </section>
 
         <section className="card">
-          <h2>⚡ Current Projects</h2>
+          <div className="section-header">
+            <h2>⚡ Current Projects</h2>
+            <Link to="/projects">View all →</Link>
+          </div>
 
-          {projects.map((project) => (
+          {activeProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
               missionTitle={missionTitleById(project.missionId)}
             />
           ))}
+
+          {activeProjects.length === 0 && <p className="hint">No active projects.</p>}
         </section>
 
         <section className="card">
@@ -89,20 +66,6 @@ function Dashboard() {
           <h2>🌌 Observatory</h2>
           <p>Weather and astronomy modules will appear here.</p>
         </section>
-
-        {completedMissions.length > 0 && (
-          <section className="card">
-            <h2>✅ Recently Completed</h2>
-            <p className="hint">
-              A dedicated Finished page is coming soon — for now, completed missions show
-              here.
-            </p>
-
-            {completedMissions.map((mission) => (
-              <MissionCard key={mission.id} mission={mission} onUpdate={updateMission} />
-            ))}
-          </section>
-        )}
       </div>
     </div>
   );

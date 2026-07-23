@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (updated in v0.2 Phase 1 — see Section 15)
+v0.1 — Foundation Architecture (updated through v0.2 Phase 2 — see Section 15)
 
 ## Status
 
@@ -135,6 +135,8 @@ AI should consume structured information—not replace it.
 - React
 - TypeScript
 - Vite
+- React Router (`react-router-dom`) — added in v0.2 Phase 2 for
+  client-side routing
 - Hand-written CSS (Tailwind was originally planned here; adoption is
   deferred — see ROADMAP.md Phase 3. Styling is being incrementally
   prepared for a token-based theme system instead of being migrated to
@@ -177,7 +179,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (as of v0.2 Phase 1)
+## Current (as of v0.2 Phase 2)
 
 ```
 northstar/
@@ -193,11 +195,16 @@ northstar/
 │   │   └── layout/      (Sidebar)
 │   │
 │   ├── pages/
-│   │   └── Dashboard.tsx  (single page; no routing yet)
+│   │   ├── Dashboard.tsx    (summary view)
+│   │   ├── Missions.tsx     (full Mission add/edit/complete)
+│   │   ├── Projects.tsx
+│   │   ├── Finished.tsx     (completed Missions + Projects)
+│   │   ├── Knowledge.tsx    (placeholder)
+│   │   └── Settings.tsx     (placeholder)
 │   │
 │   ├── models/      (Mission, Project — typed data shapes)
 │   ├── services/    (storage.ts — versioned localStorage layer)
-│   ├── hooks/        (useCollection — CRUD over a model collection)
+│   ├── hooks/        (useCollection, useMissions, useProjects)
 │   ├── utils/         (id.ts)
 │   └── data/           (seed data used on first run)
 │
@@ -205,32 +212,18 @@ northstar/
 └── README.md
 ```
 
-## Target (once Phase 2 — Navigation & Modules — lands)
+Routing is handled by `react-router-dom` (`BrowserRouter` in `App.tsx`,
+`NavLink` in `Sidebar.tsx` for active-route highlighting).
 
-```
-northstar/
-├── src/
-│   ├── components/
-│   │   ├── common/
-│   │   ├── layout/
-│   │   ├── navigation/
-│   │   └── widgets/
-│   │
-│   ├── pages/
-│   │   ├── Dashboard/
-│   │   ├── Missions/
-│   │   ├── Projects/
-│   │   ├── Knowledge/
-│   │   └── Settings/
-│   │
-│   ├── models/
-│   ├── services/
-│   ├── themes/
-│   ├── utils/
-│   └── data/
-```
+`pages/` is currently flat files rather than the `Dashboard/`,
+`Missions/`, etc. subfolders shown in the original v0.1 target
+structure — each page is still a single component, so a subfolder per
+page would be empty scaffolding. Revisit if a page grows internal
+sub-components.
 
-Themes (`src/themes/`) arrive with Phase 3.
+`src/themes/` and `components/{common,navigation,widgets}/` remain
+aspirational; they arrive with Phase 3 (theming) and whenever a
+component actually needs that categorization.
 
 ---
 
@@ -557,11 +550,13 @@ Every new capability should strengthen the foundation rather than complicate it.
 
 ---
 
-# 15. v0.2 Phase 1 — Implementation Notes
+# 15. v0.2 Implementation Notes
 
-Phase 1 (data foundation) is complete. This section records what was
-actually built, as a concrete first instance of Section 11's Data
-Migration Strategy and Section 6's data model.
+Phases 1 and 2 are complete. This section records what was actually
+built, as a concrete first instance of Section 11's Data Migration
+Strategy and Section 6's data model.
+
+## Phase 1 — Data Foundation
 
 ## Storage Service
 
@@ -588,11 +583,30 @@ timestamps) the first time they're loaded, then the storage service
 re-saves them in the current shape. New collections (e.g. Projects)
 don't need this since nothing pre-Phase-1 ever wrote them.
 
-## Known Gaps Going Into Phase 2
+## Phase 2 — Navigation & Modules
 
-- No routing — `Dashboard.tsx` is the only page.
-- Completed missions currently live in a "Recently Completed" section
-  on the Dashboard, not a dedicated route — the sidebar's "Missions" /
-  "Projects" / "Knowledge" links are still non-functional placeholders.
-- `Project.tasks` exists in the data model with no editing UI yet.
-- Styling is unchanged hand-written CSS; no theme tokens yet.
+Routing was added with `react-router-dom`. The Dashboard, which
+previously held the full Mission list (with add/edit/complete) and
+full Project list, is now a read-only summary (top 3 of each, via
+`MissionCard`'s new `readOnly` prop) that links out to dedicated
+`/missions` and `/projects` pages where the full functionality lives.
+A `/finished` route replaced the temporary "Recently Completed"
+Dashboard section. `/knowledge` and `/settings` exist as real routes
+with placeholder content — deliberately minimal rather than empty
+scaffolding, since there's no feature behind either yet.
+
+`useMissions` / `useProjects` (`src/hooks/`) wrap `useCollection` with
+each model's storage key/seed/normalizer, since three pages now need
+the same collection setup. No shared state layer (e.g. Context) was
+introduced — each page independently loads from the storage service on
+mount, which stays correct because `localStorage` is the single source
+of truth, not in-memory state carried across routes.
+
+## Known Gaps Going Into Phase 3
+
+- `Project.tasks` exists in the data model with no editing UI yet
+  (Phase 4).
+- Styling is unchanged hand-written CSS; no theme tokens yet — this is
+  Phase 3's job.
+- Knowledge and Settings are placeholders with no real data model or
+  functionality.

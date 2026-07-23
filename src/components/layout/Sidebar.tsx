@@ -1,3 +1,8 @@
+import { NavLink } from "react-router-dom";
+
+const navLinkClassName = ({ isActive }: { isActive: boolean }) =>
+  isActive ? "active" : undefined;
+
 function Sidebar() {
   return (
     <aside className="sidebar">
@@ -7,11 +12,26 @@ function Sidebar() {
       </div>
 
       <nav>
-        <a>⌂ Dashboard</a>
-        <a>🎯 Missions</a>
-        <a>📁 Projects</a>
-        <a>📚 Knowledge</a>
-        <a>🧰 Assets</a>
+        <NavLink to="/" end className={navLinkClassName}>
+          ⌂ Dashboard
+        </NavLink>
+        <NavLink to="/missions" className={navLinkClassName}>
+          🎯 Missions
+        </NavLink>
+        <NavLink to="/projects" className={navLinkClassName}>
+          📁 Projects
+        </NavLink>
+        <NavLink to="/finished" className={navLinkClassName}>
+          ✅ Finished
+        </NavLink>
+        <NavLink to="/knowledge" className={navLinkClassName}>
+          📚 Knowledge
+        </NavLink>
+
+        <a className="disabled">
+          🧰 Assets
+          <small>Future</small>
+        </a>
 
         <div className="divider" />
 
@@ -20,10 +40,12 @@ function Sidebar() {
           <small>Coming Soon</small>
         </a>
 
-        <a>⚙ Settings</a>
+        <NavLink to="/settings" className={navLinkClassName}>
+          ⚙ Settings
+        </NavLink>
       </nav>
     </aside>
-  )
+  );
 }
 
-export default Sidebar
+export default Sidebar;

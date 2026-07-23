@@ -73,7 +73,7 @@ body {
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 6px;
   margin-top: 40px;
 }
 
@@ -81,10 +81,18 @@ body {
   color: #e8e8e8;
   text-decoration: none;
   cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
 }
 
-.sidebar a:hover {
-  opacity: 0.7;
+.sidebar a:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 600;
 }
 
 .sidebar small {
@@ -268,4 +276,31 @@ body {
   font-size: 0.85rem;
   margin-top: -8px;
   margin-bottom: 12px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  white-space: nowrap;
+}
+
+.section-header a {
+  color: #9aa6b2;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.section-header a:hover {
+  color: #e8e8e8;
+}
+
+.page-list {
+  max-width: 640px;
 }
