@@ -1,0 +1,60 @@
+/*
+ * Theme: Operator Observatory (initial/default theme)
+ *
+ * This file is the swappable part of Northstar's look — everything in
+ * index.css reads colors, radii, and font-family through these custom
+ * properties instead of hardcoding values. A future theme (e.g. "Solo
+ * Leveling", "Workshop") is a new file with this same variable set and
+ * different values; index.css itself shouldn't need to change.
+ *
+ * Categories follow docs/ARCHITECTURE.md Section 10. Warning/Success
+ * colors and Shadows aren't defined yet because nothing in the UI
+ * uses them yet — add them here when a feature actually needs them,
+ * rather than guessing at values now.
+ */
+
+:root {
+  /* Typography */
+  --font-family-base: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+
+  /* Background */
+  --color-bg: #0b0f14;
+  --color-bg-gradient-start: #1b2638;
+
+  /* Text */
+  --color-text: #e8e8e8;
+  --color-text-muted: #9aa6b2;
+
+  /* Sidebar surface (distinct from card surfaces below) */
+  --color-sidebar-bg: rgba(0, 0, 0, 0.25);
+
+  /* Accent (used for the "tracked" highlight) */
+  --color-accent: #ffd166;
+  --color-accent-bg: rgba(255, 209, 102, 0.15);
+
+  /* Progress bar fill gradient */
+  --color-progress-fill-start: #ffffff;
+
+  /*
+   * Overlay scale — white-on-dark surfaces, borders, and hover states
+   * at increasing opacity. Named by intensity rather than by the one
+   * property they happen to style, since several are reused across
+   * backgrounds, borders, and hover states.
+   */
+  --color-overlay-subtle: rgba(255, 255, 255, 0.03); /* objective-card background */
+  --color-overlay-soft: rgba(255, 255, 255, 0.05); /* card / mission-card / input background */
+  --color-overlay: rgba(255, 255, 255, 0.06); /* sidebar link hover */
+  --color-overlay-medium: rgba(255, 255, 255, 0.08); /* mission-card border, button background */
+  --color-overlay-strong: rgba(255, 255, 255, 0.1); /* card border, divider, progress track */
+  --color-overlay-stronger: rgba(255, 255, 255, 0.12); /* active sidebar link */
+  --color-overlay-strongest: rgba(255, 255, 255, 0.15); /* input/button border, button hover */
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-bar: 10px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+}

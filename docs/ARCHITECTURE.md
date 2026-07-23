@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (updated through v0.2 Phase 2 — see Section 15)
+v0.1 — Foundation Architecture (updated through v0.2 Phase 3 — see Section 15)
 
 ## Status
 
@@ -137,10 +137,11 @@ AI should consume structured information—not replace it.
 - Vite
 - React Router (`react-router-dom`) — added in v0.2 Phase 2 for
   client-side routing
-- Hand-written CSS (Tailwind was originally planned here; adoption is
-  deferred — see ROADMAP.md Phase 3. Styling is being incrementally
-  prepared for a token-based theme system instead of being migrated to
-  a new framework mid-foundation.)
+- Hand-written CSS, driven by CSS custom properties defined in
+  `src/themes/` (see Section 10). Tailwind was originally planned here
+  but was evaluated and skipped in v0.2 Phase 3 — the token system
+  meets the actual goal (swappable themes) without adding a build
+  dependency; see ROADMAP.md Phase 3.
 
 Purpose:
 
@@ -179,7 +180,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (as of v0.2 Phase 2)
+## Current (as of v0.2 Phase 3)
 
 ```
 northstar/
@@ -204,7 +205,8 @@ northstar/
 │   │
 │   ├── models/      (Mission, Project — typed data shapes)
 │   ├── services/    (storage.ts — versioned localStorage layer)
-│   ├── hooks/        (useCollection, useMissions, useProjects)
+│   ├── hooks/        (useCollection, useMissions, useProjects, useTrackedItems)
+│   ├── themes/        (operator-observatory.css — CSS custom properties)
 │   ├── utils/         (id.ts)
 │   └── data/           (seed data used on first run)
 │
@@ -221,9 +223,9 @@ structure — each page is still a single component, so a subfolder per
 page would be empty scaffolding. Revisit if a page grows internal
 sub-components.
 
-`src/themes/` and `components/{common,navigation,widgets}/` remain
-aspirational; they arrive with Phase 3 (theming) and whenever a
-component actually needs that categorization.
+`src/themes/` now exists (Phase 3). `components/{common,navigation,widgets}/`
+remains aspirational, arriving whenever a component actually needs
+that categorization.
 
 ---
 
@@ -440,17 +442,32 @@ Examples:
 
 Themes should be driven by data rather than hard-coded styles.
 
+**Implemented in v0.2 Phase 3.** `src/themes/operator-observatory.css`
+defines a `:root` block of CSS custom properties; `index.css` (the
+structural/layout stylesheet) references them via `var(--token-name)`
+instead of hardcoding values. A theme is a data file, per the
+principle above — swapping themes means pointing at a different file
+with the same variable names, not editing layout CSS.
+
 Each theme should define:
 
-- Background
-- Surface Colors
-- Text Colors
-- Accent Colors
-- Warning Colors
-- Success Colors
-- Typography
-- Border Radius
-- Shadows
+- Background — done (`--color-bg`, `--color-bg-gradient-start`)
+- Surface Colors — done (the `--color-overlay-*` scale)
+- Text Colors — done (`--color-text`, `--color-text-muted`)
+- Accent Colors — done (`--color-accent`, `--color-accent-bg`)
+- Warning Colors — not yet defined; nothing in the UI has a warning
+  state yet
+- Success Colors — not yet defined; nothing in the UI has a success
+  state yet
+- Typography — partially done (`--font-family-base` only; per-element
+  font sizes are still literal, since they're closer to a layout
+  concern than a theme concern)
+- Border Radius — done (`--radius-sm` through `--radius-pill`)
+- Shadows — not yet defined; nothing in the UI uses a shadow yet
+
+Spacing (padding/margin/gap) is deliberately **not** tokenized —
+it's not in the category list above, and treating it as a theme
+concern would conflate visual identity with layout density.
 
 Initial theme:
 
@@ -636,11 +653,31 @@ card padding and heading sizes so the page fits a 1920×1080 window
 without scrolling, now that it only renders two cards' worth of live
 data instead of six.
 
-## Known Gaps Going Into Phase 3 (part 2)
+## Phase 3 (part 2) — Theme Tokens
 
-- `Project.tasks` exists in the data model with no editing UI yet
-  (Phase 4).
-- Styling is unchanged hand-written CSS; no theme tokens yet — this is
-  the remaining Phase 3 work.
+`src/themes/operator-observatory.css` defines the swappable part of
+the UI as a flat list of CSS custom properties (colors, border radii,
+font-family), documented in Section 10. `index.css` was rewritten to
+reference `var(--token-name)` everywhere a value used to be hardcoded,
+with zero visual change — verified by screenshot comparison across
+every route before and after.
+
+Doing this pass surfaced some CSS cruft, cleaned up at the same time
+since every value it touched had to be looked at anyway: `.mission-card`,
+`.progress-fill`, and `.priority` were each defined twice (later block
+silently overriding the earlier one — harmless but confusing);
+`.northstar`, `.header`, and a bare `.dashboard` selector were unused
+leftovers from before routing existed; `App.css` (default Vite
+template boilerplate) was never imported anywhere and was deleted.
+
+**Tailwind**: evaluated per Section 4 and skipped, not just deferred.
+The token system meets the actual goal — swappable theme identity —
+without adding a build-time dependency for a solo-maintained project.
+
+## Known Gaps Going Into Phase 4
+
+- `Project.tasks` exists in the data model with no editing UI yet.
 - Knowledge and Settings are placeholders with no real data model or
   functionality.
+- Warning/Success colors and Shadows are documented theme categories
+  with no values yet — add them when a feature needs them.

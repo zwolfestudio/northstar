@@ -11,8 +11,7 @@ how it's actually built, see [ARCHITECTURE.md](ARCHITECTURE.md).
 **v0.1** — Shipped (foundation: dashboard, mission tracking, local
 storage, professional dark UI).
 
-**v0.2** — In progress. Phase 1 and Phase 2 complete. Phase 3 in
-progress — Dashboard tracking/layout shipped, theme tokens pending.
+**v0.2** — In progress. Phases 1–3 complete. Phase 4 next.
 
 ---
 
@@ -64,9 +63,9 @@ progress — Dashboard tracking/layout shipped, theme tokens pending.
   links, even though there's no feature behind them yet
 - Finished page covers both completed Missions and completed Projects
 
-### Phase 3 — Theme System — In Progress
+### Phase 3 — Theme System — ✅ Complete (2026-07-23)
 
-**Dashboard tracking & layout — ✅ Complete (2026-07-23)**
+**Dashboard tracking & layout**
 
 - Dashboard now shows exactly one Mission and one Project — whichever
   is manually "tracked" — instead of a top-3 summary
@@ -88,14 +87,32 @@ progress — Dashboard tracking/layout shipped, theme tokens pending.
   mission). Fixed by persisting the seed on first read, not first
   write, in `src/services/storage.ts`.
 
-**Still to do:**
+**Theme tokens**
 
-- Extract hardcoded colors/spacing from `index.css` into theme
-  tokens / CSS variables
-- Revisit the Tailwind decision now that there's a token system to
-  migrate onto (or not)
-- No new themes yet — just make "Operator Observatory" swappable in
-  principle
+- All colors, border-radius, and font-family in `index.css` now read
+  from CSS custom properties defined in
+  `src/themes/operator-observatory.css`, instead of being hardcoded
+  inline
+- Spacing (padding/margin/gap) was deliberately left as literal
+  values — it's a layout concern, not a theme dimension per
+  ARCHITECTURE.md Section 10, and tokenizing it would've been a much
+  larger change for no real payoff
+- Warning/Success colors and Shadows are documented as reserved
+  categories but not defined — nothing in the UI needs them yet;
+  adding unused tokens now would be guessing at values
+- Consolidated a few duplicate/dead CSS rules found while doing this
+  (`.mission-card`, `.progress-fill`, `.priority` were each defined
+  twice, and `.northstar`/`.header`/`.dashboard` were unused leftovers
+  from before routing existed); deleted the never-imported `App.css`
+  Vite boilerplate
+- Zero visual change — verified via screenshot comparison across every
+  route
+- **Decision**: Tailwind adoption skipped for good (not just
+  deferred) — the CSS-variable token system achieves the theming goal
+  with less migration risk and fewer moving parts for a solo,
+  non-technical-owner project
+- No new themes yet — a second theme is now just a new file in
+  `src/themes/` with the same variable names and different values
 
 ### Phase 4 — Projects & Knowledge Modules
 
