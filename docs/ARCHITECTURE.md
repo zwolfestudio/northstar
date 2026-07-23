@@ -2,7 +2,14 @@
 
 ## Version
 
-v0.1 — Foundation Architecture
+v0.1 — Foundation Architecture (updated in v0.2 Phase 1 — see Section 15)
+
+## Status
+
+See [ROADMAP.md](ROADMAP.md) for current phase status. This document
+describes the architecture as actually implemented as of the most
+recent phase; historical sections that are still aspirational (not yet
+built) are marked as such.
 
 ---
 
@@ -128,7 +135,10 @@ AI should consume structured information—not replace it.
 - React
 - TypeScript
 - Vite
-- Tailwind CSS
+- Hand-written CSS (Tailwind was originally planned here; adoption is
+  deferred — see ROADMAP.md Phase 3. Styling is being incrementally
+  prepared for a token-based theme system instead of being migrated to
+  a new framework mid-foundation.)
 
 Purpose:
 
@@ -167,6 +177,8 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
+## Current (as of v0.2 Phase 1)
+
 ```
 northstar/
 
@@ -176,6 +188,28 @@ northstar/
 │
 ├── src/
 │   ├── assets/
+│   ├── components/
+│   │   ├── cards/      (MissionCard, ProjectCard)
+│   │   └── layout/      (Sidebar)
+│   │
+│   ├── pages/
+│   │   └── Dashboard.tsx  (single page; no routing yet)
+│   │
+│   ├── models/      (Mission, Project — typed data shapes)
+│   ├── services/    (storage.ts — versioned localStorage layer)
+│   ├── hooks/        (useCollection — CRUD over a model collection)
+│   ├── utils/         (id.ts)
+│   └── data/           (seed data used on first run)
+│
+├── package.json
+└── README.md
+```
+
+## Target (once Phase 2 — Navigation & Modules — lands)
+
+```
+northstar/
+├── src/
 │   ├── components/
 │   │   ├── common/
 │   │   ├── layout/
@@ -194,10 +228,9 @@ northstar/
 │   ├── themes/
 │   ├── utils/
 │   └── data/
-│
-├── package.json
-└── README.md
 ```
+
+Themes (`src/themes/`) arrive with Phase 3.
 
 ---
 
@@ -217,15 +250,17 @@ Future versions may support multiple users.
 
 Represents a meaningful long-term objective.
 
-Contains:
+Implemented in `src/models/mission.ts`. Fields:
 
-- Title
-- Description
-- Status
-- Progress
-- Priority
-- Next Action
-- Related Projects
+- `id` — stable identifier, generated once, never reused
+- `title`
+- `category`
+- `description` (optional)
+- `status` — `Planning | Active | On Hold | Completed`
+- `progress` — 0-100
+- `priority` — `Low | Medium | High | Critical`
+- `nextAction` (optional)
+- `createdAt` / `updatedAt` / `completedAt` (optional) — ISO timestamps
 
 Examples:
 
@@ -237,17 +272,22 @@ Examples:
 
 ## Project
 
-Represents a concrete effort.
+Represents a concrete effort. As of v0.2 Phase 1, the v0.1 code's
+separate "Objective" concept was folded into Project — a Project can
+optionally link back to the Mission it belongs to.
 
-Contains:
+Implemented in `src/models/project.ts`. Fields:
 
-- Title
-- Description
-- Tasks
-- Progress
-- Status
-- Notes
-- Related Assets
+- `id`
+- `title`
+- `missionId` (optional) — links to a Mission's `id`
+- `description` (optional)
+- `tasks` — `Task[]`, each `{ id, title, done }` (data model exists;
+  no task-editing UI yet — see ROADMAP.md Phase 4)
+- `progress` — 0-100
+- `status` — `Planning | Active | On Hold | Completed`
+- `notes` (optional)
+- `createdAt` / `updatedAt`
 
 Examples:
 
@@ -514,3 +554,45 @@ The long-term value of Northstar comes from the relationships between informatio
 The architecture should always prioritize clarity, extensibility, and maintainability.
 
 Every new capability should strengthen the foundation rather than complicate it.
+
+---
+
+# 15. v0.2 Phase 1 — Implementation Notes
+
+Phase 1 (data foundation) is complete. This section records what was
+actually built, as a concrete first instance of Section 11's Data
+Migration Strategy and Section 6's data model.
+
+## Storage Service
+
+`src/services/storage.ts` wraps every collection saved to
+`localStorage` in a `{ version, data }` envelope instead of writing
+bare arrays. On load, it also recognizes the old bare-array shape
+v0.1 used and transparently upgrades it — no user data was lost when
+this shipped, and the same mechanism is the seam for future storage
+migrations (Local Database, then Cloud Database) described in Section
+11, without changing how the rest of the app reads/writes data.
+
+## Collection Hook
+
+`src/hooks/useCollection.ts` is a generic `add` / `update` / `remove`
+hook over any `{ id: string }`-shaped collection, backed by the
+storage service. Missions and Projects both use it rather than talking
+to `localStorage` directly.
+
+## Legacy Data Normalization
+
+`normalizeMissions` in `src/models/mission.ts` backfills fields
+missing on records written by pre-Phase-1 code (no `id`, no
+timestamps) the first time they're loaded, then the storage service
+re-saves them in the current shape. New collections (e.g. Projects)
+don't need this since nothing pre-Phase-1 ever wrote them.
+
+## Known Gaps Going Into Phase 2
+
+- No routing — `Dashboard.tsx` is the only page.
+- Completed missions currently live in a "Recently Completed" section
+  on the Dashboard, not a dedicated route — the sidebar's "Missions" /
+  "Projects" / "Knowledge" links are still non-functional placeholders.
+- `Project.tasks` exists in the data model with no editing UI yet.
+- Styling is unchanged hand-written CSS; no theme tokens yet.

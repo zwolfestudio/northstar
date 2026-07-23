@@ -4,6 +4,15 @@
 
 v0.1 — Foundation Release
 
+## Status
+
+v0.1 shipped everything described below. v0.2 is in progress — see
+[ROADMAP.md](ROADMAP.md) for current phase status and
+[ARCHITECTURE.md](ARCHITECTURE.md) for how it's actually built.
+
+This document is the product vision and stays stable across versions;
+it isn't rewritten each phase.
+
 ---
 
 # 1. Product Vision
