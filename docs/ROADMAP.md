@@ -13,8 +13,12 @@ storage, professional dark UI).
 
 **v0.2** — ✅ Shipped (2026-07-23). All five phases complete.
 
-**v0.3** — In progress (theme: *Context*). v0.3.1 complete. v0.2.5
-("Identity Foundation") is interleaved next, then v0.3.2 onward.
+**v0.3** — In progress (theme: *Context*). v0.3.1 complete. v0.3.2
+onward is next, checking in before starting.
+
+**v0.2.5** — ✅ Shipped (2026-07-24). "Identity Foundation" — trimmed
+from a much larger original proposal. Character + Values only;
+Principles/Interests/Experiences deliberately deferred.
 
 ---
 
@@ -211,6 +215,44 @@ entity types.
 - Every Mission/Project card gained a "View details →" link, and every
   Mission label shown elsewhere (Project cards, Notes) is now a link
   to that Mission's detail page, same for Project labels
+
+---
+
+## v0.2.5 — Identity Foundation — ✅ Complete (2026-07-24)
+
+Originally proposed as a much larger "Personal Context Layer"
+(Character, Values, Principles, Interests, Experiences, a Dashboard
+widget, a UX polish pass — six phases, bigger than all of v0.2
+combined). Trimmed after review to just the two phases below;
+Principles, Interests, and Experiences were deliberately deferred
+rather than modeled before Character and Values had been used for
+real. See PRODUCT_SPEC.md Section 6 for the reasoning behind each
+deferred concept.
+
+### Phase 1 — Character Foundation
+
+- New `/character` page: a singleton `Character` profile — name,
+  current chapter, short description — via `loadValue`/`saveValue`
+  (same primitive as `useTrackedItems`), not `useCollection`, since
+  there's exactly one
+- Seeded empty, not with placeholder content; the page shows a setup
+  prompt until filled in
+- Core Values shipped as an empty-state placeholder in this phase, not
+  a throwaway field on `Character` — avoided building something
+  Phase 2 would immediately discard
+- `preferences` dropped entirely — no concrete use case, so nothing
+  was built to guess at one
+
+### Phase 2 — Values Expansion
+
+- `Value` as a real collection (`id`, `title`, `description`,
+  `importance`, timestamps) — a peer of Mission/Project/Note, not
+  nested inside Character
+- Full add/edit/delete on the Character page, replacing the Phase 1
+  placeholder
+- `importance` is a two-tier `Core | Supporting` scale — the original
+  spec only ever gave one example ("Priority: Core"), so a longer
+  taxonomy would have been guessing
 
 ### v0.3.2 — Daily Briefing
 

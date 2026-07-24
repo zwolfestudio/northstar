@@ -6,7 +6,7 @@ v0.1 — Foundation Release
 
 ## Status
 
-v0.1 shipped everything described below. v0.2 is in progress — see
+v0.1 and v0.2 have shipped. v0.3 and v0.2.5 are in progress — see
 [ROADMAP.md](ROADMAP.md) for current phase status and
 [ARCHITECTURE.md](ARCHITECTURE.md) for how it's actually built.
 
@@ -222,7 +222,75 @@ Examples:
 
 ---
 
-# 6. AI Vision
+# 6. Personal Context
+
+Northstar's foundation was organized information: what things exist,
+what's related to what. Personal Context is the layer where Northstar
+begins to understand *who* is using it — not just what they're
+working on, but why it matters to them.
+
+This is deliberately small right now. It should earn complexity
+through use, not be modeled in full before anyone has lived with it.
+
+## Character
+
+A single, persistent profile representing the user: a name, the
+current chapter of their life or work, and a short description of
+where they are right now.
+
+Example:
+
+Current Chapter:
+Building
+
+Description:
+Learning to create useful things and turn ideas into reality.
+
+---
+
+## Values
+
+Persistent statements of what the user cares about — not tasks, not
+goals, but the things that make effort feel worthwhile.
+
+Example:
+
+Value:
+Creativity
+
+Description:
+I feel most fulfilled when I am making something.
+
+Importance:
+Core
+
+---
+
+## Future Direction (Not Yet Built)
+
+Considered during Personal Context's design and deliberately
+deferred — not because they're unimportant, but because building them
+before Character and Values have been used for real risks modeling
+the wrong shape:
+
+- **Principles** — rules the user tries to operate by (e.g. "build
+  before consuming"). Valuable for future AI alignment, but waiting
+  until there's a clearer picture of how the user actually interacts
+  with Northstar.
+- **Interests** — ongoing areas of identity, distinct from Projects
+  (which have completion states). Deferred pending clarity on whether
+  Interests should be categories, knowledge nodes, activity trackers,
+  or skill domains.
+- **Experiences** — a log of meaningful moments, linked to Interests
+  and Projects. Depends on the relationship-traversal work already
+  underway (see ROADMAP.md) to mean anything beyond stored history.
+
+None of these are current architecture. They're named here so the
+reasoning behind deferring them isn't lost.
+
+---
+
+# 7. AI Vision
 
 AI is not the foundation of Northstar.
 
@@ -284,7 +352,7 @@ Examples:
 
 ---
 
-# 7. v0.1 Scope
+# 8. v0.1 Scope
 
 ## Included
 
@@ -312,7 +380,7 @@ Examples:
 
 ---
 
-# 8. Design Direction
+# 9. Design Direction
 
 ## Theme
 
@@ -335,7 +403,7 @@ Not:
 
 ---
 
-# 9. Success Criteria
+# 10. Success Criteria
 
 Northstar v0.1 succeeds when:
 

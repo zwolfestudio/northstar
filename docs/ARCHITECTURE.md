@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (v0.2 shipped in full; v0.3.1 shipped — see Section 15)
+v0.1 — Foundation Architecture (v0.2 shipped in full; v0.3.1 and v0.2.5 shipped — see Section 15)
 
 ## Status
 
@@ -192,7 +192,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (v0.2 shipped, v0.3.1 in progress)
+## Current (v0.2 shipped, v0.3.1 + v0.2.5 in progress)
 
 ```
 northstar/
@@ -204,11 +204,12 @@ northstar/
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │   ├── cards/      (MissionCard, ProjectCard, NoteCard)
+│   │   ├── cards/      (MissionCard, ProjectCard, NoteCard, ValueCard)
 │   │   └── layout/      (Sidebar)
 │   │
 │   ├── pages/
 │   │   ├── Dashboard.tsx       (summary view + Daily Briefing shell)
+│   │   ├── Character.tsx       (identity + Core Values)
 │   │   ├── Missions.tsx        (full Mission add/edit/complete)
 │   │   ├── MissionDetail.tsx   (linked Projects + Notes)
 │   │   ├── Projects.tsx        (full Project add/edit/complete + tasks)
@@ -217,9 +218,10 @@ northstar/
 │   │   ├── Knowledge.tsx       (full Note add/edit/delete)
 │   │   └── Settings.tsx        (placeholder)
 │   │
-│   ├── models/      (Mission, Project, Note — typed data shapes)
+│   ├── models/      (Mission, Project, Note, Character, Value — typed data shapes)
 │   ├── services/    (storage.ts + storage.test.ts — versioned localStorage layer)
-│   ├── hooks/        (useCollection, useMissions, useProjects, useNotes, useTrackedItems)
+│   ├── hooks/        (useCollection, useMissions, useProjects, useNotes, useValues,
+│   │                  useCharacter, useTrackedItems)
 │   ├── themes/        (operator-observatory.css — CSS custom properties)
 │   ├── utils/         (id.ts, relations.ts + relations.test.ts)
 │   └── data/           (seed data used on first run)
@@ -247,11 +249,48 @@ that categorization.
 
 Northstar revolves around connected information.
 
-## User
+## Character
 
-Represents the owner of the system.
+Represents the owner of the system — this section used to be called
+"User" and say nothing more than "represents the owner of the
+system." As of v0.2.5, that's implemented for real rather than left
+as a stub, so the two concepts were merged into one.
 
-Future versions may support multiple users.
+A singleton, not a collection — there is exactly one, always. Backed
+by `loadValue`/`saveValue` (the same storage primitive as
+`useTrackedItems`), not `useCollection`. Implemented in
+`src/models/character.ts`. Fields:
+
+- `name`
+- `currentChapter`
+- `shortDescription`
+- `updatedAt`
+
+Seeded empty (all fields `""`); the Character page shows a setup
+prompt rather than placeholder content until filled in.
+
+Future versions may support multiple users — if that ever happens,
+Character becomes per-user rather than a global singleton, but that's
+a real architecture change, not assumed now.
+
+---
+
+## Value
+
+Represents something the user cares about — not a task or a goal, but
+what makes effort feel worthwhile. A peer collection alongside Mission/
+Project/Note, not nested inside Character. Implemented in
+`src/models/value.ts`. Fields:
+
+- `id`
+- `title`
+- `description`
+- `importance` — `Core | Supporting`
+- `createdAt` / `updatedAt`
+
+`importance` is a deliberately narrow two-tier scale. The product spec
+only ever gave one example ("Priority: Core"); a longer taxonomy would
+have been guessing at a shape nobody asked for.
 
 ---
 
@@ -794,6 +833,28 @@ place a Mission or Project title already appeared as a label (Project
 cards showing their Mission, Notes showing their Mission/Project) that
 label became a link.
 
+## v0.2.5 — Identity Foundation
+
+Trimmed down from an originally much larger "Personal Context Layer"
+proposal (Character, Values, Principles, Interests, Experiences, a
+Dashboard widget, a UX polish pass) after a review concluded that was
+the largest scope ever proposed for this project — bigger than all of
+v0.2. Character and Values shipped; Principles, Interests, and
+Experiences were deliberately deferred (see PRODUCT_SPEC.md Section 6)
+rather than modeled ahead of any real usage.
+
+**Phase 1 — Character Foundation:** `Character` (Section 6, above) and
+its page. The Core Values section shipped as an empty-state
+placeholder rather than a throwaway field on `Character` — avoided
+building something Phase 2 would immediately discard.
+
+**Phase 2 — Values Expansion:** `Value` (Section 6, above) as a real
+collection, replacing the placeholder with full add/edit/delete.
+
+`/character` is a new route and sidebar entry. Section 6's old "User"
+stub was folded into "Character" rather than kept as a separate,
+never-implemented concept.
+
 ## Known Gaps Going Into v0.3.2+
 
 - Knowledge has no search/filter — fine for a handful of notes, worth
@@ -805,3 +866,5 @@ label became a link.
   component or integration tests yet.
 - Notes still have no detail route of their own (see above) — revisit
   if that stops being sufficient.
+- Principles, Interests, and Experiences remain undesigned by intent —
+  see PRODUCT_SPEC.md Section 6 for the reasoning behind each.
