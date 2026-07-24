@@ -11,11 +11,10 @@ how it's actually built, see [ARCHITECTURE.md](ARCHITECTURE.md).
 **v0.1** — Shipped (foundation: dashboard, mission tracking, local
 storage, professional dark UI).
 
-**v0.2** — In progress. Phases 1–4 complete. Phase 5 next — the last
-phase before v0.2 is done.
+**v0.2** — ✅ Shipped (2026-07-23). All five phases complete.
 
 **v0.3** — Planned (theme: *Context*). Not started; begins after v0.2
-Phase 5 ships and gets some real daily use.
+gets some real daily use.
 
 ---
 
@@ -141,16 +140,34 @@ Phase 5 ships and gets some real daily use.
   don't need it, and search is really a "Librarian"-stage AI feature
   per the product spec's AI roadmap, not a Phase 4 concern
 
-### Phase 5 — Polish & Hardening
+### Phase 5 — Polish & Hardening — ✅ Complete (2026-07-23)
 
-- Replace the "Today's Focus" and "Observatory" placeholder widgets
-  with a single **Daily Briefing** panel — the container only, not
-  yet curating anything (see v0.3 Phase 2 below)
-- Decide Observatory's fate: it doesn't survive as a separate concept.
-  Live weather/astronomy is Imported Context (external data) and is
-  out of scope here — see v0.3's Explicit Non-Goals
-- Add tests around the storage layer, given how much depends on it
-- Finish documentation updates for v0.2 as a whole
+- "Today's Focus" and "Observatory" placeholder widgets replaced with
+  a single **Daily Briefing** card. It's the shell only — a
+  placeholder explaining what's coming, not yet curating anything
+  (that's v0.3 Phase 2)
+- Observatory doesn't survive as a separate concept. The Daily
+  Briefing placeholder says why: weather/astronomy is Imported
+  Context, and Northstar doesn't reach outside itself yet
+- Dashboard is down to three cards (Tracked Mission, Tracked Project,
+  Daily Briefing) instead of four — comfortably inside the 1920×1080
+  no-scroll budget from Phase 3, with room to spare
+- Vitest added (`npm test`) — the project's first automated tests.
+  Chose it over Jest for zero extra config with an existing Vite
+  project; no `jsdom`/`happy-dom` dependency added since the storage
+  layer only touches `localStorage`'s handful of methods, which a
+  15-line in-memory stub covers
+- 8 tests covering `src/services/storage.ts`: collection/value
+  round-trips, seed persistence on first read (direct regression test
+  for the Phase 3 bug), legacy bare-array upgrade, `normalize`
+  application, and corrupt-JSON fallback
+- **Storage key rename**: `northstar-dashboard-tracked` →
+  `northstar-spotlight`, agreed during v0.3 planning — the old name
+  described who happened to read it (the Dashboard) rather than what
+  it is (Missions/Projects pages write to it too). Includes a
+  one-time migration so nobody's current tracked selection is lost
+  silently
+- Documentation updated to close out v0.2 (this entry)
 
 **Note on Daily Briefing spanning two phases:** Phase 5 builds the
 shell — it exists, it shows the spotlighted Mission/Project, it has a

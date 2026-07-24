@@ -59,13 +59,12 @@ function Dashboard() {
         </section>
 
         <section className="card">
-          <h2>📌 Today's Focus</h2>
-          <p>No priorities assigned.</p>
-        </section>
-
-        <section className="card">
-          <h2>🌌 Observatory</h2>
-          <p>Weather and astronomy modules will appear here.</p>
+          <h2>🧭 Daily Briefing</h2>
+          <p className="hint">
+            Deterministic recommendations — stalled missions, inactive projects, unfinished
+            tasks — arrive with v0.3. Weather and astronomy were considered for this spot and
+            deferred: they're external data, and Northstar doesn't reach outside itself yet.
+          </p>
         </section>
       </div>
     </div>

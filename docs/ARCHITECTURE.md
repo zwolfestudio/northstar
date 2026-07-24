@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (updated through v0.2 Phase 4 — see Section 15)
+v0.1 — Foundation Architecture (v0.2 shipped in full — see Section 15)
 
 ## Status
 
@@ -150,6 +150,10 @@ Added in v0.3 planning, but it retroactively explains decisions made well before
   but was evaluated and skipped in v0.2 Phase 3 — the token system
   meets the actual goal (swappable themes) without adding a build
   dependency; see ROADMAP.md Phase 3.
+- Vitest — added in v0.2 Phase 5 for the storage service test suite.
+  No `jsdom`/`happy-dom`; the one module under test only touches
+  `localStorage`'s handful of methods, so a small in-memory stub in
+  the test file covers it without a DOM-emulation dependency.
 
 Purpose:
 
@@ -188,7 +192,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (as of v0.2 Phase 4)
+## Current (v0.2 shipped)
 
 ```
 northstar/
@@ -204,7 +208,7 @@ northstar/
 │   │   └── layout/      (Sidebar)
 │   │
 │   ├── pages/
-│   │   ├── Dashboard.tsx    (summary view)
+│   │   ├── Dashboard.tsx    (summary view + Daily Briefing shell)
 │   │   ├── Missions.tsx     (full Mission add/edit/complete)
 │   │   ├── Projects.tsx     (full Project add/edit/complete + tasks)
 │   │   ├── Finished.tsx     (completed Missions + Projects)
@@ -212,7 +216,7 @@ northstar/
 │   │   └── Settings.tsx     (placeholder)
 │   │
 │   ├── models/      (Mission, Project, Note — typed data shapes)
-│   ├── services/    (storage.ts — versioned localStorage layer)
+│   ├── services/    (storage.ts + storage.test.ts — versioned localStorage layer)
 │   ├── hooks/        (useCollection, useMissions, useProjects, useNotes, useTrackedItems)
 │   ├── themes/        (operator-observatory.css — CSS custom properties)
 │   ├── utils/         (id.ts)
@@ -739,12 +743,40 @@ with its own edit mode, and a real `Knowledge.tsx` replacing the
 placeholder. Notes can optionally link to a Mission and/or Project via
 the same `<select>` pattern used for Project→Mission linking.
 
-## Known Gaps Going Into Phase 5
+## Phase 5 — Polish & Hardening (v0.2 complete)
+
+The Dashboard's two remaining placeholders — "Today's Focus" and
+"Observatory" — were replaced with one **Daily Briefing** card. It's
+still a placeholder (explains what's coming, curates nothing), but
+it's one card instead of two, which is also why the Dashboard now
+clears its no-scroll budget (Section on Phase 3) with room to spare
+rather than exactly filling it.
+
+Vitest was added as the project's first test runner, scoped
+deliberately narrow: `src/services/storage.ts` only, since that's the
+module the most other code depends on and the one that's already
+produced one real bug (the Phase 3 seed-id issue). No DOM-emulation
+dependency (`jsdom`/`happy-dom`) — the module only calls a few
+`localStorage` methods, so the test file defines a ~15-line in-memory
+stand-in instead.
+
+The Dashboard/Missions/Projects tracking mechanism was renamed:
+`northstar-dashboard-tracked` → `northstar-spotlight`
+(`src/hooks/useTrackedItems.ts`). The old name described the one
+screen that happened to read it; three different pages write to it.
+`loadTracked()` checks the new key first, falls back to the old key
+and migrates it forward if found, so an existing tracked selection
+isn't silently lost by the rename.
+
+## Known Gaps Going Into v0.3
 
 - Knowledge has no search/filter — fine for a handful of notes, worth
   revisiting once there are many.
 - Settings is still a placeholder with no real functionality.
 - Warning/Success colors and Shadows are documented theme categories
   with no values yet — add them when a feature needs them.
-- No automated tests anywhere yet — Phase 5 explicitly calls out the
-  storage layer as the highest-value place to start.
+- Test coverage is intentionally narrow (storage service only) — no
+  component or integration tests yet.
+- No detail/single-entity views anywhere — Missions, Projects, and
+  Notes are all list-only. This is exactly what v0.3 Phase 1
+  (Contextual Navigation) exists to fix.
