@@ -15,6 +15,9 @@ function Sidebar() {
         <NavLink to="/" end className={navLinkClassName}>
           ⌂ Dashboard
         </NavLink>
+        <NavLink to="/character" className={navLinkClassName}>
+          🧑 Character
+        </NavLink>
         <NavLink to="/missions" className={navLinkClassName}>
           🎯 Missions
         </NavLink>
