@@ -1,10 +1,16 @@
 import { useState } from "react";
 import useCharacter from "../hooks/useCharacter";
+import useValues from "../hooks/useValues";
+import ValueCard from "../components/cards/ValueCard";
+import { createId } from "../utils/id";
 
 function Character() {
   const { character, updateCharacter } = useCharacter();
+  const { items: values, addItem: addValue, updateItem: updateValue, removeItem: removeValue } =
+    useValues();
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(character);
+  const [newValueTitle, setNewValueTitle] = useState("");
 
   const startEditing = () => {
     setDraft(character);
@@ -21,6 +27,22 @@ function Character() {
   };
 
   const isEmpty = !character.name && !character.currentChapter && !character.shortDescription;
+
+  const handleAddValue = () => {
+    const title = newValueTitle.trim();
+    if (!title) return;
+
+    const now = new Date().toISOString();
+    addValue({
+      id: createId(),
+      title,
+      description: "",
+      importance: "Supporting",
+      createdAt: now,
+      updatedAt: now,
+    });
+    setNewValueTitle("");
+  };
 
   return (
     <div>
@@ -81,7 +103,32 @@ function Character() {
 
       <section className="card">
         <h2>Core Values</h2>
-        <p className="hint">Values aren't set up yet — coming in the next phase.</p>
+
+        <div className="add-mission">
+          <input
+            className="mission-input"
+            placeholder="New value title..."
+            value={newValueTitle}
+            onChange={(e) => setNewValueTitle(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAddValue()}
+          />
+          <button onClick={handleAddValue}>Add Value</button>
+        </div>
+
+        <div className="page-list">
+          {values.map((value) => (
+            <ValueCard
+              key={value.id}
+              value={value}
+              onUpdate={updateValue}
+              onRemove={removeValue}
+            />
+          ))}
+        </div>
+
+        {values.length === 0 && (
+          <p className="hint">No values yet. Add what matters to you above.</p>
+        )}
       </section>
     </div>
   );
