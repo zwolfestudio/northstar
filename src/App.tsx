@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar";
 import Dashboard from "./pages/Dashboard";
+import Search from "./pages/Search";
 import Character from "./pages/Character";
 import Missions from "./pages/Missions";
 import MissionDetail from "./pages/MissionDetail";
@@ -19,6 +20,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/character" element={<Character />} />
             <Route path="/missions" element={<Missions />} />
             <Route path="/missions/:id" element={<MissionDetail />} />

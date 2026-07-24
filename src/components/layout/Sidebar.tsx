@@ -15,6 +15,9 @@ function Sidebar() {
         <NavLink to="/" end className={navLinkClassName}>
           ⌂ Dashboard
         </NavLink>
+        <NavLink to="/search" className={navLinkClassName}>
+          🔍 Search
+        </NavLink>
         <NavLink to="/character" className={navLinkClassName}>
           🧑 Character
         </NavLink>

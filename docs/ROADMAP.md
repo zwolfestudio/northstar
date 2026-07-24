@@ -13,8 +13,9 @@ storage, professional dark UI).
 
 **v0.2** — ✅ Shipped (2026-07-23). All five phases complete.
 
-**v0.3** — In progress (theme: *Context*). v0.3.1 and v0.3.2 complete.
-v0.3.3 (Information Hierarchy & UX Polish) is next.
+**v0.3** — In progress (theme: *Context*). v0.3.1, v0.3.2, and v0.3.3
+complete — v0.3 is now fully shipped. v0.4 (Knowledge Layer) isn't
+planned yet; see the note below the Explicit Non-Goals section.
 
 **v0.2.5** — ✅ Shipped (2026-07-24). "Identity Foundation" — trimmed
 from a much larger original proposal. Character + Values only;
@@ -280,29 +281,42 @@ deferred concept.
   no `completedAt` field yet, and approximating one from `updatedAt`
   would be guessing. Small, real future enhancement, not done here
 
-### v0.3.3 — Information Hierarchy & UX Polish
+### v0.3.3 — Information Hierarchy & UX Polish — ✅ Complete (2026-07-24)
 
-Confirmed (not "Knowledge Connections" — see the open question raised
-alongside v0.2.5, now resolved): the app doesn't have enough data
-density yet for graph-style connection browsing to be more than a
-line between three boxes. Knowledge Connections becomes a future
+Confirmed (not "Knowledge Connections" — the app doesn't have enough
+data density yet for graph-style connection browsing to be more than
+a line between three boxes). Knowledge Connections becomes a future
 **v0.4 — Knowledge Layer** milestone instead, once Character → Values
 → Missions → Projects → Notes has more real data in it to connect.
 
-Reframed goal: **make Northstar feel like an application, not a
-collection of pages** — the app currently has rooms; this phase builds
-the hallways. Scope to work through when this phase starts:
+Goal: **make Northstar feel like an application, not a collection of
+pages.**
 
-- Richer entity pages (status, related items, timeline, next actions —
-  not just a card plus two link lists)
-- Breadcrumb navigation (`Dashboard > Missions > Build Northstar`)
-- Universal linking — Notes linking out is new in v0.3.1; extend the
-  pattern everywhere an entity references another
-- Basic search across Missions/Projects/Notes — worth doing before any
-  knowledge-graph work, since navigation alone stops scaling once
-  there are dozens of items, graph or not
+- **Richer entity pages** — surfaced `Mission.description` and
+  `Mission.nextAction`, both modeled since Phase 1 and never shown or
+  editable anywhere until now. `Project.description` was deliberately
+  left alone: `Project.notes` already covers the same "free text about
+  this project" role, so adding a second overlapping field would have
+  been redundant, not richer. Both new Mission fields are gated behind
+  `!readOnly` (same convention as `Project.notes`), so the Dashboard's
+  compact tracked-item spotlight doesn't grow
+- **Timeline** — Created/Last Updated (and Completed, if set) on both
+  detail pages, via a small `formatDate` helper. Nothing before this
+  showed either timestamp anywhere in the UI
+- **Breadcrumb navigation** — `Dashboard › Missions › Build Northstar`
+  on both detail pages, replacing the plain "← back to list" link
+- **Universal linking** — Notes' "Linked Notes" entries on Mission/
+  Project detail pages now deep-link to the specific note
+  (`/knowledge#note-<id>`) instead of the general Knowledge list, via
+  a hash-anchor scroll + 2-second highlight. Closes the loop v0.3.1
+  started (Notes linking out to Missions/Projects, but not the reverse)
+- **Basic search** — new `/search` page, matches substrings across
+  Mission (title/category/description/nextAction), Project (title/
+  notes), and Note (title/body), grouped results, links straight to
+  the right detail page or highlighted note. 7 tests
+  (`src/utils/search.ts`)
 
-Every screen should still answer a clear question:
+Every screen still answers a clear question:
 
 - Dashboard → What deserves my attention today?
 - Mission → Why does this matter?

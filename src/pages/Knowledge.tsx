@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import NoteCard from "../components/cards/NoteCard";
 import useMissions from "../hooks/useMissions";
 import useProjects from "../hooks/useProjects";
@@ -14,11 +15,24 @@ function Knowledge() {
     updateItem: updateNote,
     removeItem: removeNote,
   } = useNotes();
+  const location = useLocation();
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [missionId, setMissionId] = useState("");
   const [projectId, setProjectId] = useState("");
+
+  useEffect(() => {
+    if (!location.hash) return;
+
+    const target = document.getElementById(location.hash.slice(1));
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.classList.add("highlight");
+    const timeout = setTimeout(() => target.classList.remove("highlight"), 2000);
+    return () => clearTimeout(timeout);
+  }, [location.hash]);
 
   const missionTitleById = (id?: string) =>
     id ? missions.find((mission) => mission.id === id)?.title : undefined;

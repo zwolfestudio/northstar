@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (v0.2 shipped in full; v0.3.1, v0.2.5, v0.3.2 shipped — see Section 15)
+v0.1 — Foundation Architecture (v0.2 shipped in full; v0.3 shipped in full; v0.2.5 shipped — see Section 15)
 
 ## Status
 
@@ -192,7 +192,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (v0.2 shipped; v0.3.1, v0.2.5, v0.3.2 shipped)
+## Current (v0.2 and v0.3 shipped in full; v0.2.5 shipped)
 
 ```
 northstar/
@@ -209,13 +209,14 @@ northstar/
 │   │
 │   ├── pages/
 │   │   ├── Dashboard.tsx       (summary view + real Daily Briefing)
+│   │   ├── Search.tsx          (basic cross-entity search)
 │   │   ├── Character.tsx       (identity + Core Values)
 │   │   ├── Missions.tsx        (full Mission add/edit/complete)
-│   │   ├── MissionDetail.tsx   (linked Projects + Notes)
+│   │   ├── MissionDetail.tsx   (linked Projects + Notes, timeline, breadcrumb)
 │   │   ├── Projects.tsx        (full Project add/edit/complete + tasks)
-│   │   ├── ProjectDetail.tsx   (parent Mission + linked Notes)
+│   │   ├── ProjectDetail.tsx   (parent Mission + linked Notes, timeline, breadcrumb)
 │   │   ├── Finished.tsx        (completed Missions + Projects)
-│   │   ├── Knowledge.tsx       (full Note add/edit/delete)
+│   │   ├── Knowledge.tsx       (full Note add/edit/delete, hash-anchor deep links)
 │   │   └── Settings.tsx        (placeholder)
 │   │
 │   ├── models/      (Mission, Project, Note, Character, Value — typed data shapes)
@@ -223,7 +224,7 @@ northstar/
 │   ├── hooks/        (useCollection, useMissions, useProjects, useNotes, useValues,
 │   │                  useCharacter, useTrackedItems)
 │   ├── themes/        (operator-observatory.css — CSS custom properties)
-│   ├── utils/         (id.ts, relations.ts + .test.ts, briefing.ts + .test.ts)
+│   ├── utils/         (id.ts, date.ts, relations.ts, briefing.ts, search.ts — each with a .test.ts)
 │   └── data/           (seed data used on first run)
 │
 ├── package.json
@@ -303,11 +304,12 @@ Implemented in `src/models/mission.ts`. Fields:
 - `id` — stable identifier, generated once, never reused
 - `title`
 - `category`
-- `description` (optional)
+- `description` (optional) — editable and shown since v0.3.3; modeled
+  since Phase 1 but had no UI until then
 - `status` — `Planning | Active | On Hold | Completed`
 - `progress` — 0-100
 - `priority` — `Low | Medium | High | Critical`
-- `nextAction` (optional)
+- `nextAction` (optional) — same story as `description`
 - `createdAt` / `updatedAt` / `completedAt` (optional) — ISO timestamps
 
 Examples:
@@ -878,18 +880,54 @@ from `T extends { id: string }` to `T extends { id: string; updatedAt: string }`
 — true of all four current collections (Mission, Project, Note, Value)
 already, just not previously enforced.
 
-## Known Gaps Going Into v0.3.3
+## v0.3.3 — Information Hierarchy & UX Polish
 
-- Knowledge has no search/filter — v0.3.3 scope now includes basic
-  search, see ROADMAP.md.
+Four small, mostly-independent changes rather than one big one:
+
+**Richer entity pages.** `Mission.description` and `Mission.nextAction`
+existed in the model since Phase 1 with zero UI. Added to
+`MissionCard`'s edit form and (gated behind `!readOnly`, same
+convention as `Project.notes`) its read view. `Project.description`
+was deliberately *not* surfaced — `Project.notes` already fills that
+role, and a second free-text field would have been redundant rather
+than richer.
+
+**Timeline.** New `src/utils/date.ts` (`formatDate`) backs a Timeline
+section on both detail pages — Created / Last Updated / Completed.
+Nothing showed either timestamp anywhere before this.
+
+**Breadcrumbs.** Both detail pages went from a bare "← back to list"
+link to a full `Dashboard › Missions › Build Northstar` trail.
+
+**Universal linking.** `NoteCard`'s root element now carries
+`id={note-<id>}`. `Knowledge.tsx` watches `location.hash` (via
+`useLocation`, not a mount-only effect, since navigating between two
+different notes doesn't remount the page) and scrolls to / highlights
+the target note for 2 seconds. Mission/Project detail pages' "Linked
+Notes" now link to `/knowledge#note-<id>` instead of the bare
+`/knowledge` list — closes the loop v0.3.1 started (Notes could link
+out to Missions/Projects, but not the reverse, precisely).
+
+**Basic search.** New `/search` page and `src/utils/search.ts` —
+plain case-insensitive substring matching across Mission (title/
+category/description/nextAction), Project (title/notes), and Note
+(title/body), no ranking or fuzzy matching. 7 tests. Intentionally
+ahead of any knowledge-graph work: navigation alone stops scaling
+once there are dozens of items, independent of whether relationships
+are ever visualized as a graph.
+
+## Known Gaps Going Into v0.4
+
 - Settings is still a placeholder with no real functionality.
 - Warning/Success colors and Shadows are documented theme categories
   with no values yet — add them when a feature needs them.
-- Test coverage is narrow (storage service, relation/briefing
-  utilities) — no component or integration tests yet.
-- Notes still have no detail route of their own — revisit if that
-  stops being sufficient.
+- Test coverage is narrow (pure utility functions) — no component or
+  integration tests yet.
+- Notes still have no detail route of their own — the hash-anchor deep
+  link now gets you to the right note, which may be sufficient
+  indefinitely; revisit only if it stops being.
 - Principles, Interests, and Experiences remain undesigned by intent —
   see PRODUCT_SPEC.md Section 6 for the reasoning behind each.
 - `Project` has no `completedAt` field, so `getRecentGrowth` only
   considers Missions. Small, real gap — not filled speculatively.
+- v0.4 (Knowledge Layer) is a name, not a plan — see ROADMAP.md.

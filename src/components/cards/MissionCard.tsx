@@ -28,6 +28,8 @@ function MissionCard({ mission, onUpdate, readOnly = false, onTrack, isTracked =
       category: draft.category,
       priority: draft.priority,
       status: draft.status,
+      description: draft.description,
+      nextAction: draft.nextAction,
     });
     setIsEditing(false);
   };
@@ -79,6 +81,21 @@ function MissionCard({ mission, onUpdate, readOnly = false, onTrack, isTracked =
           ))}
         </select>
 
+        <textarea
+          className="mission-input"
+          placeholder="Description..."
+          rows={2}
+          value={draft.description ?? ""}
+          onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+        />
+
+        <input
+          className="mission-input"
+          placeholder="Next action..."
+          value={draft.nextAction ?? ""}
+          onChange={(e) => setDraft({ ...draft, nextAction: e.target.value })}
+        />
+
         <div className="mission-actions">
           <button onClick={saveEditing}>Save</button>
           <button onClick={() => setIsEditing(false)}>Cancel</button>
@@ -119,6 +136,12 @@ function MissionCard({ mission, onUpdate, readOnly = false, onTrack, isTracked =
           />
         </div>
       </div>
+
+      {!readOnly && mission.description && <p className="note-body">{mission.description}</p>}
+
+      {!readOnly && mission.nextAction && (
+        <p className="hint">Next: {mission.nextAction}</p>
+      )}
 
       {!readOnly && (
         <div className="mission-actions">

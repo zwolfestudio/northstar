@@ -93,7 +93,7 @@ function NoteCard({
   }
 
   return (
-    <div className="objective-card">
+    <div className="objective-card" id={`note-${note.id}`}>
       <h3>{note.title}</h3>
 
       {(missionTitle || projectTitle) && (

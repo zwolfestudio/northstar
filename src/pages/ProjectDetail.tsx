@@ -5,6 +5,7 @@ import useProjects from "../hooks/useProjects";
 import useNotes from "../hooks/useNotes";
 import useTrackedItems from "../hooks/useTrackedItems";
 import { getMissionForProject, getNotesForProject } from "../utils/relations";
+import { formatDate } from "../utils/date";
 
 function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +32,8 @@ function ProjectDetail() {
   return (
     <div>
       <p className="breadcrumb">
-        <Link to="/projects">← Projects</Link>
+        <Link to="/">Dashboard</Link> › <Link to="/projects">Projects</Link> ›{" "}
+        <span className="breadcrumb-current">{project.title}</span>
       </p>
 
       <div className="page-list">
@@ -71,11 +73,26 @@ function ProjectDetail() {
           <ul className="related-list">
             {linkedNotes.map((note) => (
               <li key={note.id}>
-                <Link to="/knowledge">{note.title}</Link>
+                <Link to={`/knowledge#note-${note.id}`}>{note.title}</Link>
               </li>
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="card">
+        <h2>Timeline</h2>
+
+        <ul className="related-list">
+          <li>
+            <span>Created</span>
+            <span className="related-meta">{formatDate(project.createdAt)}</span>
+          </li>
+          <li>
+            <span>Last Updated</span>
+            <span className="related-meta">{formatDate(project.updatedAt)}</span>
+          </li>
+        </ul>
       </section>
     </div>
   );
