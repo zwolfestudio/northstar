@@ -100,6 +100,14 @@ AI should consume structured information—not replace it.
 
 ---
 
+## Context Over Recall
+
+Northstar should never require the user to remember where information lives. Relationships should surface naturally through context.
+
+Added in v0.3 planning, but it retroactively explains decisions made well before it was written down: why a Project links back to its Mission, why a Note can tag a Mission and a Project at once, why the Dashboard spotlights one tracked item instead of listing everything, and why AI (Sections 8-9) is sequenced to reason over structured context rather than compensate for its absence. When a future feature is unclear, this is the question to ask: does it help the right information surface on its own, or does it just add another place to go looking?
+
+---
+
 # 3. High-Level Architecture
 
 ```
@@ -577,6 +585,23 @@ The long-term value of Northstar comes from the relationships between informatio
 The architecture should always prioritize clarity, extensibility, and maintainability.
 
 Every new capability should strengthen the foundation rather than complicate it.
+
+## From Dashboard to Context Engine
+
+*Added during v0.3 planning (2026-07-23), refining the vision above in light of what v0.2 actually built.*
+
+Northstar is evolving into a memory and decision system, not merely a productivity application. Its long-term value comes from maintaining structured context and surfacing meaningful relationships between the user's work — future AI should reason over that context rather than replace it.
+
+A shift is worth naming plainly: Northstar was originally conceived as "a dashboard where I organize my life." After v0.2 — the tracked-item spotlight, relational Missions/Projects/Notes, a Dashboard deliberately kept thin — it is closer to "a local-first context engine with a dashboard." The dashboard is the window; the system is the context. That happened as a consequence of individual architectural decisions, not a redesign, which is itself a sign the underlying model is sound.
+
+The intended progression stays:
+
+1. Build reliable data.
+2. Make relationships navigable.
+3. Surface deterministic insights.
+4. Introduce AI as a reasoning layer over an already rich context.
+
+Northstar should earn the ability to make intelligent recommendations through the quality of its data model and relationships, rather than relying on an LLM to compensate for missing structure. That principle should continue guiding architectural decisions beyond v0.3 — see [ROADMAP.md](ROADMAP.md) for what's actually scheduled.
 
 ---
 

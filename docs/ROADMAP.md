@@ -14,6 +14,9 @@ storage, professional dark UI).
 **v0.2** — In progress. Phases 1–4 complete. Phase 5 next — the last
 phase before v0.2 is done.
 
+**v0.3** — Planned (theme: *Context*). Not started; begins after v0.2
+Phase 5 ships and gets some real daily use.
+
 ---
 
 ## v0.2 — Data Foundation & Navigation
@@ -140,9 +143,93 @@ phase before v0.2 is done.
 
 ### Phase 5 — Polish & Hardening
 
-- Decide real scope for the "Today's Focus" and "Observatory"
-  placeholder widgets, or explicitly defer to v0.3
+- Replace the "Today's Focus" and "Observatory" placeholder widgets
+  with a single **Daily Briefing** panel — the container only, not
+  yet curating anything (see v0.3 Phase 2 below)
+- Decide Observatory's fate: it doesn't survive as a separate concept.
+  Live weather/astronomy is Imported Context (external data) and is
+  out of scope here — see v0.3's Explicit Non-Goals
 - Add tests around the storage layer, given how much depends on it
+- Finish documentation updates for v0.2 as a whole
+
+**Note on Daily Briefing spanning two phases:** Phase 5 builds the
+shell — it exists, it shows the spotlighted Mission/Project, it has a
+place for recommendations. It does not curate anything yet. v0.3
+Phase 2 is what makes it actually derive and surface insights. This
+is a deliberate split, not two attempts at the same thing.
+
+---
+
+## v0.3 — Context
+
+Not AI. Not automation. Not integrations. **Context.**
+
+The objective of v0.3 is to make Northstar understand the
+relationships that already exist inside the user's information. See
+[ARCHITECTURE.md](ARCHITECTURE.md) Section 2 ("Context Over Recall")
+for the principle this theme is built on.
+
+**Product goal:** by the end of v0.3, opening any Mission, Project, or
+Note should naturally answer "what else is related to this?" The
+emphasis is on exposing relationships that already exist in the data
+model (Project→Mission, Note→Mission/Project) — not on inventing new
+entity types.
+
+### Phase 1 — Contextual Navigation
+
+- Detail views for Missions, Projects, and Notes — the app is
+  currently list-only; there's no route to open a single Mission and
+  see what's linked to it
+- Mission detail: linked Projects, linked Notes
+- Project detail: parent Mission, linked Notes, task checklist
+- Note detail (or inline expansion): linked Mission, linked Project
+- This phase establishes the shared relation-query layer ("everything
+  linked to X") that Phase 2's derived recommendations reuse — that's
+  the technical reason this phase comes first, not just narrative
+  ordering
+
+### Phase 2 — Daily Briefing
+
+- Fills the container Phase 5 built with actual curation: spotlighted
+  Mission/Project, derived recommendations, recent progress, recent
+  activity
+- Recommendations are deterministic — no LLM, no external services.
+  Examples: a stalled Mission, an inactive Project, recently updated
+  work, unfinished tasks
+- Built entirely from **Owned Context** (data Northstar holds — Mission,
+  Project, Notes) and **Derived Context** (local, deterministic
+  inferences over that data — "untouched for 12 days", "three Projects
+  point to this Mission"). No **Imported Context** (weather, calendar,
+  or any external service) — see Explicit Non-Goals
+
+### Phase 3 — Information Hierarchy & UX Polish
+
+Improve presentation without increasing complexity. Every screen
+should answer a clear question:
+
+- Dashboard → What deserves my attention today?
+- Mission → Why does this matter?
+- Project → What should I do next?
+- Knowledge → What do I already know?
+- Finished → What have I accomplished?
+- Settings → How do I configure Northstar?
+
+If a page can't answer its question clearly, it's either carrying too
+much responsibility or doesn't need to exist yet.
+
+### Explicit Non-Goals
+
+v0.3 will intentionally not include:
+
+- LLM integration
+- External APIs — weather, calendar sync, email, GitHub, etc.
+- Speculative entity types (Assets, People, Places) that don't yet
+  solve a real, current problem
+
+These remain future possibilities, not v0.3 objectives. When an
+external integration is actually built, its boundary should be
+designed around that real integration — not guessed at generically
+ahead of time.
 
 ---
 
@@ -157,3 +244,6 @@ phase before v0.2 is done.
 - **Real data lives here.** This is a daily-use personal tool, not a
   demo. Never reset or restructure localStorage without confirming
   first.
+- **Documentation Convergence.** Docs get periodically tightened, not
+  just expanded. When a decision changes or a section goes stale,
+  prefer editing what exists over adding a new document.
