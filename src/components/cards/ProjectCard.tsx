@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { Project, ProjectStatus } from "../../models/project";
 import type { Mission } from "../../models/mission";
 import { createId } from "../../utils/id";
@@ -133,7 +134,15 @@ function ProjectCard({
         {isTracked && <span className="tracked-badge">★ Tracked</span>}
       </h3>
 
-      {missionTitle && <p className="category">{missionTitle}</p>}
+      {missionTitle && project.missionId && (
+        <p className="category">
+          <Link to={`/missions/${project.missionId}`}>{missionTitle}</Link>
+        </p>
+      )}
+
+      <Link to={`/projects/${project.id}`} className="detail-link">
+        View details →
+      </Link>
 
       <div className="progress-bar">
         <div

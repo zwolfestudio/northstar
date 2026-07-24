@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { Mission, MissionStatus, Priority } from "../../models/mission";
 
 type Props = {
@@ -95,6 +96,9 @@ function MissionCard({ mission, onUpdate, readOnly = false, onTrack, isTracked =
             {isTracked && <span className="tracked-badge">★ Tracked</span>}
           </h3>
           <p className="category">{mission.category}</p>
+          <Link to={`/missions/${mission.id}`} className="detail-link">
+            View details →
+          </Link>
         </div>
 
         <span className="status">{mission.status}</span>

@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (v0.2 shipped in full — see Section 15)
+v0.1 — Foundation Architecture (v0.2 shipped in full; v0.3.1 shipped — see Section 15)
 
 ## Status
 
@@ -192,7 +192,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (v0.2 shipped)
+## Current (v0.2 shipped, v0.3.1 in progress)
 
 ```
 northstar/
@@ -208,18 +208,20 @@ northstar/
 │   │   └── layout/      (Sidebar)
 │   │
 │   ├── pages/
-│   │   ├── Dashboard.tsx    (summary view + Daily Briefing shell)
-│   │   ├── Missions.tsx     (full Mission add/edit/complete)
-│   │   ├── Projects.tsx     (full Project add/edit/complete + tasks)
-│   │   ├── Finished.tsx     (completed Missions + Projects)
-│   │   ├── Knowledge.tsx    (full Note add/edit/delete)
-│   │   └── Settings.tsx     (placeholder)
+│   │   ├── Dashboard.tsx       (summary view + Daily Briefing shell)
+│   │   ├── Missions.tsx        (full Mission add/edit/complete)
+│   │   ├── MissionDetail.tsx   (linked Projects + Notes)
+│   │   ├── Projects.tsx        (full Project add/edit/complete + tasks)
+│   │   ├── ProjectDetail.tsx   (parent Mission + linked Notes)
+│   │   ├── Finished.tsx        (completed Missions + Projects)
+│   │   ├── Knowledge.tsx       (full Note add/edit/delete)
+│   │   └── Settings.tsx        (placeholder)
 │   │
 │   ├── models/      (Mission, Project, Note — typed data shapes)
 │   ├── services/    (storage.ts + storage.test.ts — versioned localStorage layer)
 │   ├── hooks/        (useCollection, useMissions, useProjects, useNotes, useTrackedItems)
 │   ├── themes/        (operator-observatory.css — CSS custom properties)
-│   ├── utils/         (id.ts)
+│   ├── utils/         (id.ts, relations.ts + relations.test.ts)
 │   └── data/           (seed data used on first run)
 │
 ├── package.json
@@ -768,15 +770,38 @@ screen that happened to read it; three different pages write to it.
 and migrates it forward if found, so an existing tracked selection
 isn't silently lost by the rename.
 
-## Known Gaps Going Into v0.3
+## v0.3.1 — Contextual Navigation
+
+`/missions/:id` and `/projects/:id` are new routes (`MissionDetail.tsx`,
+`ProjectDetail.tsx`) rendering the full, editable card plus "linked"
+sections built from `src/utils/relations.ts` — small pure functions
+(`getProjectsForMission`, `getNotesForMission`, `getNotesForProject`,
+`getMissionForProject`) rather than a generic query layer, since only
+four concrete lookups exist. Covered by 6 tests, same spirit as the
+storage service tests from Phase 5.
+
+Notes did not get a detail route. A Note's full body is already
+visible in its list card on `/knowledge`; a detail page would show
+the same information again. Instead, `NoteCard`'s Mission/Project
+labels became clickable links to those entities' new detail pages —
+the "note detail" requirement from the roadmap is satisfied by
+linking out rather than duplicating a view.
+
+List pages (`Missions.tsx`, `Projects.tsx`) are unchanged otherwise —
+this was purely additive, not a rework of what already worked. Every
+`MissionCard`/`ProjectCard` gained a "View details →" link, and every
+place a Mission or Project title already appeared as a label (Project
+cards showing their Mission, Notes showing their Mission/Project) that
+label became a link.
+
+## Known Gaps Going Into v0.3.2+
 
 - Knowledge has no search/filter — fine for a handful of notes, worth
   revisiting once there are many.
 - Settings is still a placeholder with no real functionality.
 - Warning/Success colors and Shadows are documented theme categories
   with no values yet — add them when a feature needs them.
-- Test coverage is intentionally narrow (storage service only) — no
+- Test coverage is narrow (storage service, relation utilities) — no
   component or integration tests yet.
-- No detail/single-entity views anywhere — Missions, Projects, and
-  Notes are all list-only. This is exactly what v0.3 Phase 1
-  (Contextual Navigation) exists to fix.
+- Notes still have no detail route of their own (see above) — revisit
+  if that stops being sufficient.

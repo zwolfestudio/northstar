@@ -13,8 +13,8 @@ storage, professional dark UI).
 
 **v0.2** — ✅ Shipped (2026-07-23). All five phases complete.
 
-**v0.3** — Planned (theme: *Context*). Not started; begins after v0.2
-gets some real daily use.
+**v0.3** — In progress (theme: *Context*). v0.3.1 complete. v0.2.5
+("Identity Foundation") is interleaved next, then v0.3.2 onward.
 
 ---
 
@@ -192,20 +192,27 @@ emphasis is on exposing relationships that already exist in the data
 model (Project→Mission, Note→Mission/Project) — not on inventing new
 entity types.
 
-### Phase 1 — Contextual Navigation
+### v0.3.1 — Contextual Navigation — ✅ Complete (2026-07-23)
 
-- Detail views for Missions, Projects, and Notes — the app is
-  currently list-only; there's no route to open a single Mission and
+- New `/missions/:id` and `/projects/:id` detail routes — the app was
+  list-only before this; there was no way to open a single Mission and
   see what's linked to it
 - Mission detail: linked Projects, linked Notes
-- Project detail: parent Mission, linked Notes, task checklist
-- Note detail (or inline expansion): linked Mission, linked Project
-- This phase establishes the shared relation-query layer ("everything
-  linked to X") that Phase 2's derived recommendations reuse — that's
-  the technical reason this phase comes first, not just narrative
-  ordering
+- Project detail: parent Mission, linked Notes, task checklist (the
+  full `ProjectCard`, not a read-only summary — editable in place)
+- Notes didn't get their own detail route — a Note's full body is
+  already visible in its list card, so there was nothing a detail page
+  would add. Instead, a Note's Mission/Project labels became clickable
+  links to *their* detail pages
+- `src/utils/relations.ts`: the shared relation-query layer
+  (`getProjectsForMission`, `getNotesForMission`, `getNotesForProject`,
+  `getMissionForProject`) — small pure functions, not a query engine.
+  6 tests. This is what v0.3.2's derived recommendations will reuse
+- Every Mission/Project card gained a "View details →" link, and every
+  Mission label shown elsewhere (Project cards, Notes) is now a link
+  to that Mission's detail page, same for Project labels
 
-### Phase 2 — Daily Briefing
+### v0.3.2 — Daily Briefing
 
 - Fills the container Phase 5 built with actual curation: spotlighted
   Mission/Project, derived recommendations, recent progress, recent
@@ -219,7 +226,12 @@ entity types.
   point to this Mission"). No **Imported Context** (weather, calendar,
   or any external service) — see Explicit Non-Goals
 
-### Phase 3 — Information Hierarchy & UX Polish
+### v0.3.3 — Information Hierarchy & UX Polish
+
+*(Naming note: a later message sketched this phase as "Knowledge
+connections — tags, relationships, discoverability" instead. Left
+as originally agreed pending confirmation of which is intended — see
+the open question raised alongside v0.2.5.)*
 
 Improve presentation without increasing complexity. Every screen
 should answer a clear question:

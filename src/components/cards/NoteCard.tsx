@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { Note } from "../../models/note";
 import type { Mission } from "../../models/mission";
 import type { Project } from "../../models/project";
@@ -96,7 +97,15 @@ function NoteCard({
       <h3>{note.title}</h3>
 
       {(missionTitle || projectTitle) && (
-        <p className="category">{[missionTitle, projectTitle].filter(Boolean).join(" · ")}</p>
+        <p className="category">
+          {note.missionId && missionTitle && (
+            <Link to={`/missions/${note.missionId}`}>{missionTitle}</Link>
+          )}
+          {note.missionId && missionTitle && note.projectId && projectTitle && " · "}
+          {note.projectId && projectTitle && (
+            <Link to={`/projects/${note.projectId}`}>{projectTitle}</Link>
+          )}
+        </p>
       )}
 
       <p className="note-body">{note.body}</p>
