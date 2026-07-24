@@ -4,6 +4,7 @@ import ProjectCard from "../components/cards/ProjectCard";
 import useMissions from "../hooks/useMissions";
 import useProjects from "../hooks/useProjects";
 import useTrackedItems from "../hooks/useTrackedItems";
+import { getSuggestion, getRecentGrowth } from "../utils/briefing";
 
 function Dashboard() {
   const { items: missions } = useMissions();
@@ -21,6 +22,10 @@ function Dashboard() {
 
   const missionTitleById = (id?: string) =>
     id ? missions.find((mission) => mission.id === id)?.title : undefined;
+
+  const suggestion = getSuggestion(trackedMission, missions, projects);
+  const recentGrowth = getRecentGrowth(missions);
+  const hasBriefingContent = trackedMission || suggestion || recentGrowth;
 
   return (
     <div className="dashboard-page">
@@ -60,11 +65,39 @@ function Dashboard() {
 
         <section className="card">
           <h2>🧭 Daily Briefing</h2>
-          <p className="hint">
-            Deterministic recommendations — stalled missions, inactive projects, unfinished
-            tasks — arrive with v0.3. Weather and astronomy were considered for this spot and
-            deferred: they're external data, and Northstar doesn't reach outside itself yet.
-          </p>
+
+          {trackedMission && (
+            <div className="briefing-item">
+              <span className="briefing-label">Focus</span>
+              <p>{trackedMission.title}</p>
+            </div>
+          )}
+
+          {suggestion && (
+            <div className="briefing-item">
+              <span className="briefing-label">Suggested</span>
+              <p>{suggestion.text}</p>
+              <p className="hint">{suggestion.reason}</p>
+            </div>
+          )}
+
+          {!suggestion && trackedMission && (
+            <div className="briefing-item">
+              <span className="briefing-label">Suggested</span>
+              <p className="hint">Nothing stalled — steady progress.</p>
+            </div>
+          )}
+
+          {recentGrowth && (
+            <div className="briefing-item">
+              <span className="briefing-label">Recent Growth</span>
+              <p>Completed "{recentGrowth.title}"</p>
+            </div>
+          )}
+
+          {!hasBriefingContent && (
+            <p className="hint">Add a mission to get your first briefing.</p>
+          )}
         </section>
       </div>
     </div>

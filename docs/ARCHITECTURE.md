@@ -2,7 +2,7 @@
 
 ## Version
 
-v0.1 — Foundation Architecture (v0.2 shipped in full; v0.3.1 and v0.2.5 shipped — see Section 15)
+v0.1 — Foundation Architecture (v0.2 shipped in full; v0.3.1, v0.2.5, v0.3.2 shipped — see Section 15)
 
 ## Status
 
@@ -192,7 +192,7 @@ Browser Storage → Local Database → Cloud Database
 
 # 5. Project Structure
 
-## Current (v0.2 shipped, v0.3.1 + v0.2.5 in progress)
+## Current (v0.2 shipped; v0.3.1, v0.2.5, v0.3.2 shipped)
 
 ```
 northstar/
@@ -208,7 +208,7 @@ northstar/
 │   │   └── layout/      (Sidebar)
 │   │
 │   ├── pages/
-│   │   ├── Dashboard.tsx       (summary view + Daily Briefing shell)
+│   │   ├── Dashboard.tsx       (summary view + real Daily Briefing)
 │   │   ├── Character.tsx       (identity + Core Values)
 │   │   ├── Missions.tsx        (full Mission add/edit/complete)
 │   │   ├── MissionDetail.tsx   (linked Projects + Notes)
@@ -223,7 +223,7 @@ northstar/
 │   ├── hooks/        (useCollection, useMissions, useProjects, useNotes, useValues,
 │   │                  useCharacter, useTrackedItems)
 │   ├── themes/        (operator-observatory.css — CSS custom properties)
-│   ├── utils/         (id.ts, relations.ts + relations.test.ts)
+│   ├── utils/         (id.ts, relations.ts + .test.ts, briefing.ts + .test.ts)
 │   └── data/           (seed data used on first run)
 │
 ├── package.json
@@ -855,16 +855,41 @@ collection, replacing the placeholder with full add/edit/delete.
 stub was folded into "Character" rather than kept as a separate,
 never-implemented concept.
 
-## Known Gaps Going Into v0.3.2+
+## v0.3.2 — Daily Briefing
 
-- Knowledge has no search/filter — fine for a handful of notes, worth
-  revisiting once there are many.
+`src/utils/briefing.ts` holds the recommendation logic: `getSuggestion`
+(one deterministic recommendation, priority-ordered — stale focus
+Mission, then a linked Project with open tasks, then any other stalled
+Mission, then `null`) and `getRecentGrowth` (most recently completed
+Mission). Both are plain functions over arrays already in memory — no
+new storage, no new model. 9 tests, same pattern as `relations.ts`.
+
+**Bug found and fixed while building this**: `useCollection.updateItem`
+only stamped `updatedAt` when a caller's `updates` object included it.
+`NoteCard`/`ValueCard` always did; `MissionCard`/`ProjectCard` never
+did (Increase Progress, task toggles, Mark Complete all omitted it).
+Since every staleness calculation in `briefing.ts` reads `updatedAt`,
+this would have made every recommendation wrong — a Mission edited
+five minutes ago could still read as "untouched for 30 days." Fixed
+centrally: `updateItem` now stamps `updatedAt` on every call unless
+the caller already provided one, so this class of bug can't recur at
+a new call site. This tightened `useCollection`'s generic constraint
+from `T extends { id: string }` to `T extends { id: string; updatedAt: string }`
+— true of all four current collections (Mission, Project, Note, Value)
+already, just not previously enforced.
+
+## Known Gaps Going Into v0.3.3
+
+- Knowledge has no search/filter — v0.3.3 scope now includes basic
+  search, see ROADMAP.md.
 - Settings is still a placeholder with no real functionality.
 - Warning/Success colors and Shadows are documented theme categories
   with no values yet — add them when a feature needs them.
-- Test coverage is narrow (storage service, relation utilities) — no
-  component or integration tests yet.
-- Notes still have no detail route of their own (see above) — revisit
-  if that stops being sufficient.
+- Test coverage is narrow (storage service, relation/briefing
+  utilities) — no component or integration tests yet.
+- Notes still have no detail route of their own — revisit if that
+  stops being sufficient.
 - Principles, Interests, and Experiences remain undesigned by intent —
   see PRODUCT_SPEC.md Section 6 for the reasoning behind each.
+- `Project` has no `completedAt` field, so `getRecentGrowth` only
+  considers Missions. Small, real gap — not filled speculatively.

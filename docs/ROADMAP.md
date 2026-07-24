@@ -13,8 +13,8 @@ storage, professional dark UI).
 
 **v0.2** — ✅ Shipped (2026-07-23). All five phases complete.
 
-**v0.3** — In progress (theme: *Context*). v0.3.1 complete. v0.3.2
-onward is next, checking in before starting.
+**v0.3** — In progress (theme: *Context*). v0.3.1 and v0.3.2 complete.
+v0.3.3 (Information Hierarchy & UX Polish) is next.
 
 **v0.2.5** — ✅ Shipped (2026-07-24). "Identity Foundation" — trimmed
 from a much larger original proposal. Character + Values only;
@@ -254,29 +254,55 @@ deferred concept.
   spec only ever gave one example ("Priority: Core"), so a longer
   taxonomy would have been guessing
 
-### v0.3.2 — Daily Briefing
+### v0.3.2 — Daily Briefing — ✅ Complete (2026-07-24)
 
-- Fills the container Phase 5 built with actual curation: spotlighted
-  Mission/Project, derived recommendations, recent progress, recent
-  activity
-- Recommendations are deterministic — no LLM, no external services.
-  Examples: a stalled Mission, an inactive Project, recently updated
-  work, unfinished tasks
-- Built entirely from **Owned Context** (data Northstar holds — Mission,
-  Project, Notes) and **Derived Context** (local, deterministic
-  inferences over that data — "untouched for 12 days", "three Projects
-  point to this Mission"). No **Imported Context** (weather, calendar,
-  or any external service) — see Explicit Non-Goals
+- Dashboard's Daily Briefing card fills the shell Phase 5 built, with
+  real deterministic curation: Focus (the spotlighted Mission),
+  Suggested (one recommendation), Recent Growth (most recently
+  completed Mission)
+- `src/utils/briefing.ts`: `getSuggestion` returns one recommendation
+  in priority order — revisit the focus Mission if it's gone stale
+  (7+ days untouched), else a linked Project with open tasks, else any
+  other stalled Mission, else `null` ("nothing stalled"). `getRecentGrowth`
+  finds the most recently completed Mission. 9 tests
+- Built entirely from **Owned Context** (Mission/Project data) and
+  **Derived Context** (staleness, open-task counts — local, deterministic).
+  No **Imported Context** — no weather, no calendar, nothing external
+- **Bug found and fixed while building this**: `useCollection`'s
+  `updateItem` never stamped `updatedAt` unless a caller explicitly
+  included it — Notes and Values did, Missions and Projects didn't, so
+  Increase Progress / task toggles / Mark Complete left `updatedAt`
+  frozen at creation time. Since staleness is entirely computed from
+  `updatedAt`, this would have made every recommendation wrong. Fixed
+  centrally in the hook (auto-stamps on every update, unless the
+  caller already provided one) rather than patching each call site
+- Recent Growth deliberately doesn't include Projects — `Project` has
+  no `completedAt` field yet, and approximating one from `updatedAt`
+  would be guessing. Small, real future enhancement, not done here
 
 ### v0.3.3 — Information Hierarchy & UX Polish
 
-*(Naming note: a later message sketched this phase as "Knowledge
-connections — tags, relationships, discoverability" instead. Left
-as originally agreed pending confirmation of which is intended — see
-the open question raised alongside v0.2.5.)*
+Confirmed (not "Knowledge Connections" — see the open question raised
+alongside v0.2.5, now resolved): the app doesn't have enough data
+density yet for graph-style connection browsing to be more than a
+line between three boxes. Knowledge Connections becomes a future
+**v0.4 — Knowledge Layer** milestone instead, once Character → Values
+→ Missions → Projects → Notes has more real data in it to connect.
 
-Improve presentation without increasing complexity. Every screen
-should answer a clear question:
+Reframed goal: **make Northstar feel like an application, not a
+collection of pages** — the app currently has rooms; this phase builds
+the hallways. Scope to work through when this phase starts:
+
+- Richer entity pages (status, related items, timeline, next actions —
+  not just a card plus two link lists)
+- Breadcrumb navigation (`Dashboard > Missions > Build Northstar`)
+- Universal linking — Notes linking out is new in v0.3.1; extend the
+  pattern everywhere an entity references another
+- Basic search across Missions/Projects/Notes — worth doing before any
+  knowledge-graph work, since navigation alone stops scaling once
+  there are dozens of items, graph or not
+
+Every screen should still answer a clear question:
 
 - Dashboard → What deserves my attention today?
 - Mission → Why does this matter?
@@ -301,6 +327,16 @@ These remain future possibilities, not v0.3 objectives. When an
 external integration is actually built, its boundary should be
 designed around that real integration — not guessed at generically
 ahead of time.
+
+---
+
+## v0.4 — Knowledge Layer (not planned yet)
+
+A name, not a plan: once v0.3 ships and Character → Values → Missions
+→ Projects → Notes has real data density from actual use, "how are
+these connected" becomes a question worth building a graph-style
+answer to. Deliberately not scoped further than that — per Working
+Agreements below, this gets planned when it's next, not now.
 
 ---
 
